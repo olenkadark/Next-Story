@@ -1,19 +1,18 @@
 <?php
 /*
  * Plugin Name: uCAT - Next Story
- * Version: 1.0
+ * Version: 2.0.0
  * Plugin URI: http://ucat.biz/next-story/
  * Description: The lateral navigation with interesting hover effects that in some cases enhance the element, or show a preview of the content to come.
- * Author: uCAT
+ * Author: Elena Zhyvohliad
  * Author URI: http://ucat.biz/
  * Requires at least: 4.0
- * Tested up to: 4.0
+ * Tested up to: 4.9
  *
  * Text Domain: u-next-story
  * Domain Path: /lang/
  *
- * @package WordPress
- * @author uCAT
+ * @author Elena Zhyvohliad
  * @since 1.0.0
  */
 
@@ -22,6 +21,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // Load plugin class files
 require_once( 'includes/class-u-next-story.php' );
 require_once( 'includes/class-u-next-story-settings.php' );
+require_once( 'includes/class-u-next-story-rule.php' );
+require_once( 'includes/class-u-next-story-ajax.php' );
 
 // Load plugin libraries
 require_once( 'includes/lib/class-u-next-story-admin-api.php' );
@@ -34,7 +35,7 @@ require_once( 'includes/lib/class-u-next-story-admin-api.php' );
  * @return object U_Next_Story
  */
 function U_Next_Story () {
-	$instance = U_Next_Story::instance( __FILE__, '1.0.0' );
+	$instance = U_Next_Story::instance( __FILE__, '2.0.0' );
 
 	if ( is_null( $instance->settings ) ) {
 		$instance->settings = U_Next_Story_Settings::instance( $instance );

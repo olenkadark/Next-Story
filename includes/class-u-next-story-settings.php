@@ -77,16 +77,11 @@ class U_Next_Story_Settings {
 	 * @return void
 	 */
 	public function settings_assets () {
-
-		// We're including the farbtastic script & styles here because they're needed for the colour picker
-		// If you're not including a colour picker field then you can leave these calls out as well as the farbtastic dependency for the wpt-admin-js script below
-		wp_enqueue_style( 'wp-color-picker' );
+        wp_enqueue_style( $this->parent->_token . '-admin' );
 
     	// We're including the WP media scripts here because they're needed for the image upload field
     	// If you're not including an image upload then you can leave this function call out
     	wp_enqueue_media();
-
-    	wp_register_script( $this->parent->_token . '-settings-js', $this->parent->assets_url . 'js/settings' . $this->parent->script_suffix . '.js', array( 'wp-color-picker', 'jquery' ), '1.0.0' );
     	wp_enqueue_script( $this->parent->_token . '-settings-js' );
 	}
 
@@ -113,72 +108,174 @@ class U_Next_Story_Settings {
 				$post_types[$slug] = $object->label;
 			}	
 		}
-		
-		$settings['general'] = array(
-			'title'					=> __( 'General', 'u-next-story' ),
-			'fields'				=> array(
-				array(
-					'id' 			=> 'post_types',
-					'label'			=> __( 'Post Types', 'u-next-story' ),
-					'description'	=> __( 'Choose post types where need display arrow navigation.', 'u-next-story' ),
-					'type'			=> 'checkbox_multi',
-					'options'		=> $post_types,
-					'default'		=> array( 'post' )
-				),
-				array(
-					'id' 			=> 'effects_navigation',
-					'label'			=> __( 'Effects' , 'u-next-story' ),
-					'description'	=> __( 'Effects and styles for arrow navigation', 'u-next-story' ),
-					'type'			=> 'select',
-					'options'		=> array( 
-							'slide'        => 'Slide',
-							'image_bar'    => 'Image Bar',
-							'circle_pop'   => 'Circle Pop',
-							'round_slide'  => 'Round Slide',
-							'split'        => 'Split',
-							'reveal'       => 'Reveal',
-							'thumb_flip'   => 'Thumb Flip',
-							'double_flip'  => 'Double Flip',
-							'multi_thumb'  => 'Multi Thumb',
-							'circle_slide' => 'Circle Slide',
-							'grow_pop'     => 'Grow Pop',
-							'diamond'      => 'Diamond',
-							'fill_slide'   => 'Fill Slide',
-							'fill_path'    => 'Fill Path'
-						),
-					'default'		=> 'slide'
-				),
-			)
-		);
 
-		$settings['styles'] = array(
-			'title'					=> __( 'Styles', 'u-next-story' ),
-			'fields'				=> array(
-				array(
-					'id' 			=> 'background_color',
-					'label'			=> __( 'Background color' , 'u-next-story' ),
-					'type'			=> 'color',
-					'default'		=> '#ffffff'
-				),
-				array(
-					'id' 			=> 'text_color',
-					'label'			=> __( 'Text color' , 'u-next-story' ),
-					'type'			=> 'color',
-					'default'		=> '#34495e'
-				),
-				array(
-					'id' 			=> 'hover_background_color',
-					'label'			=> __( 'Hover Background color' , 'u-next-story' ),
-					'type'			=> 'color',
-					'default'		=> '#34495e'
-				),
-				array(
-					'id' 			=> 'hover_text_color',
-					'label'			=> __( 'Hover Text color' , 'u-next-story' ),
-					'type'			=> 'color',
-					'default'		=> '#ffffff'
-				),
-			)
+
+		$menus  = array('' => __('None', 'u-next-story') );
+		$nav_menus = get_registered_nav_menus();
+		if( $nav_menus && is_array($nav_menus)){
+			$menus['location'] = array('label' => __( 'Theme Location', 'u-next-story' ), 'options' => $nav_menus);
+		}
+		//var_dump();
+		$_menus = wp_get_nav_menus();
+		if( $_menus ){
+			$menus['menus'] = array('label' => __( 'Menu', 'u-next-story' ), 'options' => array());
+			foreach ($_menus as $m) {
+				$menus['menus']['options'][$m->term_id] = $m->name;
+			}
+		}
+
+        $post_type_objects = get_post_types(array('public' => true), 'objects');
+        $exclude           = array();
+        if( $post_type_objects ){
+            foreach ($post_type_objects as $slug => $object ) {
+                $taxonomy_objects = get_object_taxonomies( $slug, 'objects' );
+
+                foreach ($taxonomy_objects as $taxonomy) {
+                    if( !$taxonomy->public ) continue;
+
+                    if( isset($exclude[$taxonomy->name])){
+                        $exclude[$taxonomy->name]['class'][] = 'show_post_type_' . $slug;
+                    }else {
+                        $terms = $this->get_terms($taxonomy->name);
+                        if(empty($terms)) continue;
+
+                        $exclude[$taxonomy->name] = [
+                            'id' => $slug . '_' . $taxonomy->name,
+                            'label' => $taxonomy->label,
+                            'name'  => 'exclude[' . $taxonomy->name . ']',
+                            'class' => ['post_type_taxonomy', 'show_post_type_' . $slug],
+                            'type' => 'select_multi',
+                            'options' => $terms
+                        ];
+                    }
+                }
+            }
+        }
+        $settings['general'] = array(
+            'title'    => __( 'General', 'u-next-story' ),
+            'sections' => [
+                'general' => [
+                    'id'                    => 'general',
+                    'title'					=> __( 'General', 'u-next-story' ),
+                    'fields'				=> array(
+                        array(
+                            'id' 			=> 'post_types',
+                            'label'			=> __( 'Post Types', 'u-next-story' ),
+                            'description'	=> __( 'Choose post types where need display arrow navigation.', 'u-next-story' ),
+                            'type'			=> 'select_multi',
+                            'options'		=> $post_types,
+                            'default'		=> array( 'post' )
+                        ),
+                        array(
+                            'id' 			=> 'menu',
+                            'label'			=> __( 'Menu', 'u-next-story' ),
+                            'description'	=> __( 'Choose menu for displaying arrow navigation.', 'u-next-story' ),
+                            'type'			=> 'select',
+                            'options'		=> $menus,
+                            'default'		=> ''
+                        ),
+                        array(
+                            'id' 			=> 'submenu',
+                            'label'			=> __( 'Sub-items', 'u-next-story' ),
+                            'description'	=> __( 'Include/exclude sub-items to the arrow navigation (applicable only for hierarchical).', 'u-next-story' ),
+                            'type'			=> 'select',
+                            'options'		=> array(
+                                'include'      => __( 'Include', 'u-next-story' ),
+                                'exclude'      => __( 'Exclude', 'u-next-story' ),
+                                'only_submenu' => __( 'Only sub-items', 'u-next-story' ),
+                            ),
+                            'default'		=> 'include'
+                        ),
+                        array(
+                            'id' 			=> 'loop_menu',
+                            'label'			=> __( 'Loop', 'u-next-story' ),
+                            'description'	=> __( 'Loop menu items in the arrow navigation.', 'u-next-story' ),
+                            'type'			=> 'checkbox',
+                            'default'		=> 'off'
+                        ),
+                    )
+
+                ],
+                'exclude' => [
+                    'id'                    => 'exclude',
+                    'title'					=> __( 'Exclude', 'u-next-story' ),
+                    'fields'				=> $exclude
+                ],
+                'styles' => [
+                    'id'                    => 'styles',
+                    'title'					=> __( 'Styles', 'u-next-story' ),
+                    'fields'				=> array(
+                        array(
+                            'id' 			=> 'effects_navigation',
+                            'label'			=> __( 'Effects' , 'u-next-story' ),
+                            'description'	=> __( 'Effects and styles for arrow navigation', 'u-next-story' ),
+                            'type'			=> 'select',
+                            'options'		=> array(
+                                'slide'        => 'Slide',
+                                'image_bar'    => 'Image Bar',
+                                'circle_pop'   => 'Circle Pop',
+                                'round_slide'  => 'Round Slide',
+                                'split'        => 'Split',
+                                'reveal'       => 'Reveal',
+                                'thumb_flip'   => 'Thumb Flip',
+                                'double_flip'  => 'Double Flip',
+                                'multi_thumb'  => 'Multi Thumb',
+                                'circle_slide' => 'Circle Slide',
+                                'grow_pop'     => 'Grow Pop',
+                                'diamond'      => 'Diamond',
+                                'fill_slide'   => 'Fill Slide',
+                                'fill_path'    => 'Fill Path'
+                            ),
+                            'default'		=> 'slide'
+                        ),
+                        array(
+                            'id' 			=> 'background_color',
+                            'label'			=> __( 'Background color' , 'u-next-story' ),
+                            'type'			=> 'color',
+                            'default'		=> '#ffffff'
+                        ),
+                        array(
+                            'id' 			=> 'text_color',
+                            'label'			=> __( 'Text color' , 'u-next-story' ),
+                            'type'			=> 'color',
+                            'default'		=> '#34495e'
+                        ),
+                        array(
+                            'id' 			=> 'hover_background_color',
+                            'label'			=> __( 'Hover Background color' , 'u-next-story' ),
+                            'type'			=> 'color',
+                            'default'		=> '#34495e'
+                        ),
+                        array(
+                            'id' 			=> 'hover_text_color',
+                            'label'			=> __( 'Hover Text color' , 'u-next-story' ),
+                            'type'			=> 'color',
+                            'default'		=> '#ffffff'
+                        ),
+                        array(
+                            'id' 			=> 'top_position',
+                            'label'			=> __( 'Top position' , 'u-next-story' ),
+                            'description'	=> '%',
+                            'type'			=> 'number',
+                            'default'		=> '50'
+                        ),
+                        array(
+                            'id' 			=> 'scroll_position',
+                            'label'			=> __( 'Visible on scroll position' , 'u-next-story' ),
+                            'description'	=> 'px. (' . __( 'Don\'t show navigation until you scroll down to the specific position' , 'u-next-story' ) . ')',
+                            'type'			=> 'number',
+                            'default'		=> '0'
+                        )
+                    )
+
+                ]
+            ]
+
+        );
+
+		$settings['rules'] = array(
+			'title'					=> __( 'Rules', 'u-next-story' ),
+			'callback'				=> array( $this, 'rules_section' )
 		);
 
 		$settings = apply_filters( $this->parent->_token . '_settings_fields', $settings );
@@ -207,24 +304,38 @@ class U_Next_Story_Settings {
 
 				if ( $current_section && $current_section != $section ) continue;
 
-				// Add section to page
-				add_settings_section( $section, $data['title'], array( $this, 'settings_section' ), $this->parent->_token . '_settings' );
+				if (!isset($data['sections']) ){
+                    $data['sections'] = [$data];
+                }
 
-				foreach ( $data['fields'] as $field ) {
+				foreach ($data['sections'] as $section_data ){
 
-					// Validation callback for field
-					$validation = '';
-					if ( isset( $field['callback'] ) ) {
-						$validation = $field['callback'];
-					}
+                    $section_id = isset($section_data['id']) ? $section_data['id'] : $section;
+                    $callback   = isset($section_data['callback']) ? $section_data['callback'] : array( $this, 'settings_section' );
 
-					// Register field
-					$option_name = $this->base . $field['id'];
-					register_setting( $this->parent->_token . '_settings', $option_name, $validation );
+                    // Add section to page
+                    add_settings_section( $section_id, $section_data['title'], $callback, $this->parent->_token . '_settings' );
 
-					// Add field to page
-					add_settings_field( $field['id'], $field['label'], array( $this->parent->admin, 'display_field' ), $this->parent->_token . '_settings', $section, array( 'field' => $field, 'prefix' => $this->base ) );
-				}
+                    if(!isset($section_data['fields'])) continue;
+
+                    foreach ( $section_data['fields'] as $field ) {
+
+                        // Validation callback for field
+                        $validation = '';
+                        if ( isset( $field['callback'] ) ) {
+                            $validation = $field['callback'];
+                        }
+
+                        // Register field
+                        $option_name = $this->base . $field['id'];
+                        register_setting( $this->parent->_token . '_settings', $option_name, $validation );
+
+                        // Add field to page
+                        add_settings_field( $field['id'], $field['label'], array( $this->parent->admin, 'display_field' ), $this->parent->_token . '_settings', $section_id, array( 'field' => $field, 'prefix' => $this->base ) );
+                    }
+                }
+
+
 
 				if ( ! $current_section ) break;
 			}
@@ -250,7 +361,7 @@ class U_Next_Story_Settings {
 
 			$tab = '';
 			if ( isset( $_GET['tab'] ) && $_GET['tab'] ) {
-				$tab .= $_GET['tab'];
+				$tab = $_GET['tab'];
 			}
 
 			// Show page tabs
@@ -288,23 +399,52 @@ class U_Next_Story_Settings {
 				$html .= '</h2>' . "\n";
 			}
 
-			$html .= '<form method="post" action="options.php" enctype="multipart/form-data">' . "\n";
+			if($tab !== 'rules') $html .= '<form method="post" action="options.php" enctype="multipart/form-data">' . "\n";
 
-				// Get settings fields
-				ob_start();
-				settings_fields( $this->parent->_token . '_settings' );
-				do_settings_sections( $this->parent->_token . '_settings' );
-				$html .= ob_get_clean();
+            // Get settings fields
+            ob_start();
+            settings_fields( $this->parent->_token . '_settings' );
+            do_settings_sections( $this->parent->_token . '_settings' );
+            $html .= ob_get_clean();
 
-				$html .= '<p class="submit">' . "\n";
-					$html .= '<input type="hidden" name="tab" value="' . esc_attr( $tab ) . '" />' . "\n";
-					$html .= '<input name="Submit" type="submit" class="button-primary" value="' . esc_attr( __( 'Save Settings' , 'u-next-story' ) ) . '" />' . "\n";
-				$html .= '</p>' . "\n";
-			$html .= '</form>' . "\n";
+            if($tab !== 'rules') {
+                $html .= '<p class="submit">' . "\n";
+                $html .= '<input type="hidden" name="tab" value="' . esc_attr($tab) . '" />' . "\n";
+                $html .= '<input name="Submit" type="submit" class="button-primary" value="' . esc_attr(__('Save Settings', 'u-next-story')) . '" />' . "\n";
+                $html .= '</p>' . "\n";
+                $html .= '</form>' . "\n";
+            }
+
 		$html .= '</div>' . "\n";
 
 		echo $html;
 	}
+
+    public function rules_section($section){
+        $sections = $this->settings[ 'general']['sections'];
+        $rules = get_option( $this->base . 'rules');
+        include "views/html-section-rules.php";
+    }
+
+    private function get_terms( $taxonomy='' ){
+        $result = [];
+        $args = array(
+            'taxonomy'   => $taxonomy,
+            'hide_empty' => false,
+            'orderby'    => 'name',
+        );
+        $terms = get_terms( $args );
+
+        if ( $terms && !is_wp_error($terms)){
+            foreach ($terms as $term){
+                $result[$term->term_id] = $term->name;
+            }
+        }
+
+        return $result;
+    }
+
+
 
 	/**
 	 * Main U_Next_Story_Settings Instance

@@ -26,10 +26,16 @@ class U_Next_Story_Admin_API {
 		}
 
 		// Check for prefix on option name
+		$field_name  = '';
 		$option_name = '';
 		if ( isset( $data['prefix'] ) ) {
 			$option_name = $data['prefix'];
 		}
+        if ( isset( $data['name'] ) ) {
+            $field_name .= $data['name'];
+        }else{
+            $field_name = $option_name . $field['id'];
+        }
 
 		// Get saved data
 		$data = '';
@@ -66,12 +72,15 @@ class U_Next_Story_Admin_API {
 
 		$html = '';
 
+        $field['placeholder'] = isset($field['placeholder']) ? $field['placeholder'] : '';
+
+
 		switch( $field['type'] ) {
 
 			case 'text':
 			case 'url':
 			case 'email':
-				$html .= '<input id="' . esc_attr( $field['id'] ) . '" type="text" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $data ) . '" />' . "\n";
+				$html .= '<input id="' . esc_attr( $field['id'] ) . '" type="text" name="' . esc_attr( $field_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $data ) . '" />' . "\n";
 			break;
 
 			case 'password':
@@ -86,15 +95,15 @@ class U_Next_Story_Admin_API {
 				if ( isset( $field['max'] ) ) {
 					$max = ' max="' . esc_attr( $field['max'] ) . '"';
 				}
-				$html .= '<input id="' . esc_attr( $field['id'] ) . '" type="' . esc_attr( $field['type'] ) . '" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $data ) . '"' . $min . '' . $max . '/>' . "\n";
+				$html .= '<input id="' . esc_attr( $field['id'] ) . '" type="' . esc_attr( $field['type'] ) . '" name="' . esc_attr( $field_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $data ) . '"' . $min . '' . $max . '/>' . "\n";
 			break;
 
 			case 'text_secret':
-				$html .= '<input id="' . esc_attr( $field['id'] ) . '" type="text" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="" />' . "\n";
+				$html .= '<input id="' . esc_attr( $field['id'] ) . '" type="text" name="' . esc_attr( $field_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="" />' . "\n";
 			break;
 
 			case 'textarea':
-				$html .= '<textarea id="' . esc_attr( $field['id'] ) . '" rows="5" cols="50" name="' . esc_attr( $option_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '">' . $data . '</textarea><br/>'. "\n";
+				$html .= '<textarea id="' . esc_attr( $field['id'] ) . '" rows="5" cols="50" name="' . esc_attr( $field_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '">' . $data . '</textarea><br/>'. "\n";
 			break;
 
 			case 'checkbox':
@@ -102,16 +111,16 @@ class U_Next_Story_Admin_API {
 				if ( $data && 'on' == $data ) {
 					$checked = 'checked="checked"';
 				}
-				$html .= '<input id="' . esc_attr( $field['id'] ) . '" type="' . esc_attr( $field['type'] ) . '" name="' . esc_attr( $option_name ) . '" ' . $checked . '/>' . "\n";
+				$html .= '<input id="' . esc_attr( $field['id'] ) . '" type="' . esc_attr( $field['type'] ) . '" name="' . esc_attr( $field_name ) . '" ' . $checked . '/>' . "\n";
 			break;
 
 			case 'checkbox_multi':
 				foreach ( $field['options'] as $k => $v ) {
 					$checked = false;
-					if ( in_array( $k, $data ) ) {
+					if ( is_array($data) && in_array( $k, $data ) ) {
 						$checked = true;
 					}
-					$html .= '<label for="' . esc_attr( $field['id'] . '_' . $k ) . '" class="checkbox_multi"><input type="checkbox" ' . checked( $checked, true, false ) . ' name="' . esc_attr( $option_name ) . '[]" value="' . esc_attr( $k ) . '" id="' . esc_attr( $field['id'] . '_' . $k ) . '" /> ' . $v . '</label> ';
+					$html .= '<label for="' . esc_attr( $field['id'] . '_' . $k ) . '" class="checkbox_multi"><input type="checkbox" ' . checked( $checked, true, false ) . ' name="' . esc_attr( $field_name ) . '[]" value="' . esc_attr( $k ) . '" id="' . esc_attr( $field['id'] . '_' . $k ) . '" /> ' . $v . '</label> ';
 				}
 			break;
 
@@ -121,24 +130,38 @@ class U_Next_Story_Admin_API {
 					if ( $k == $data ) {
 						$checked = true;
 					}
-					$html .= '<label for="' . esc_attr( $field['id'] . '_' . $k ) . '"><input type="radio" ' . checked( $checked, true, false ) . ' name="' . esc_attr( $option_name ) . '" value="' . esc_attr( $k ) . '" id="' . esc_attr( $field['id'] . '_' . $k ) . '" /> ' . $v . '</label> ';
+					$html .= '<label for="' . esc_attr( $field['id'] . '_' . $k ) . '"><input type="radio" ' . checked( $checked, true, false ) . ' name="' . esc_attr( $field_name ) . '" value="' . esc_attr( $k ) . '" id="' . esc_attr( $field['id'] . '_' . $k ) . '" /> ' . $v . '</label> ';
 				}
 			break;
 
 			case 'select':
-				$html .= '<select name="' . esc_attr( $option_name ) . '" id="' . esc_attr( $field['id'] ) . '">';
+				$html .= '<select name="' . esc_attr( $field_name ) . '" id="' . esc_attr( $field['id'] ) . '">';
 				foreach ( $field['options'] as $k => $v ) {
-					$selected = false;
-					if ( $k == $data ) {
-						$selected = true;
+					if( is_array($v) ){
+						$label = isset($v['label']) ? $v['label'] : '';
+						$html .= '<optgroup label="'.$label.'">';
+						foreach ( $v['options'] as $kk => $vv ) {
+							$selected = false;
+							if ( $kk == $data ) {
+								$selected = true;
+							}
+							$html .= '<option ' . selected( $selected, true, false ) . ' value="' . esc_attr( $kk ) . '">' . $vv . '</option>';
+						}
+						$html .= '</optgroup>';
+					}else{
+						$selected = false;
+						if ( $k == $data ) {
+							$selected = true;
+						}
+						$html .= '<option ' . selected( $selected, true, false ) . ' value="' . esc_attr( $k ) . '">' . $v . '</option>';
 					}
-					$html .= '<option ' . selected( $selected, true, false ) . ' value="' . esc_attr( $k ) . '">' . $v . '</option>';
 				}
 				$html .= '</select> ';
 			break;
 
 			case 'select_multi':
-				$html .= '<select name="' . esc_attr( $option_name ) . '[]" id="' . esc_attr( $field['id'] ) . '" multiple="multiple">';
+                $data = is_array($data) ? $data : [];
+				$html .= '<select name="' . esc_attr( $field_name ) . '[]" id="' . esc_attr( $field['id'] ) . '" multiple="multiple" class="u-init-select">';
 				foreach ( $field['options'] as $k => $v ) {
 					$selected = false;
 					if ( in_array( $k, $data ) ) {
@@ -154,15 +177,15 @@ class U_Next_Story_Admin_API {
 				if ( $data ) {
 					$image_thumb = wp_get_attachment_thumb_url( $data );
 				}
-				$html .= '<img id="' . $option_name . '_preview" class="image_preview" src="' . $image_thumb . '" /><br/>' . "\n";
-				$html .= '<input id="' . $option_name . '_button" type="button" data-uploader_title="' . __( 'Upload an image' , 'u-next-story' ) . '" data-uploader_button_text="' . __( 'Use image' , 'u-next-story' ) . '" class="image_upload_button button" value="'. __( 'Upload new image' , 'u-next-story' ) . '" />' . "\n";
-				$html .= '<input id="' . $option_name . '_delete" type="button" class="image_delete_button button" value="'. __( 'Remove image' , 'u-next-story' ) . '" />' . "\n";
-				$html .= '<input id="' . $option_name . '" class="image_data_field" type="hidden" name="' . $option_name . '" value="' . $data . '"/><br/>' . "\n";
+				$html .= '<img id="' . $field_name . '_preview" class="image_preview" src="' . $image_thumb . '" /><br/>' . "\n";
+				$html .= '<input id="' . $field_name . '_button" type="button" data-uploader_title="' . __( 'Upload an image' , 'u-next-story' ) . '" data-uploader_button_text="' . __( 'Use image' , 'u-next-story' ) . '" class="image_upload_button button" value="'. __( 'Upload new image' , 'u-next-story' ) . '" />' . "\n";
+				$html .= '<input id="' . $field_name . '_delete" type="button" class="image_delete_button button" value="'. __( 'Remove image' , 'u-next-story' ) . '" />' . "\n";
+				$html .= '<input id="' . $field_name . '" class="image_data_field" type="hidden" name="' . $field_name . '" value="' . $data . '"/><br/>' . "\n";
 			break;
 
 			case 'color':
 				?><div class="color-picker" style="position:relative;">
-			        <input type="text" name="<?php esc_attr_e( $option_name ); ?>" class="color" value="<?php esc_attr_e( $data ); ?>" />
+			        <input type="text" name="<?php esc_attr_e( $field_name ); ?>" class="color" value="<?php esc_attr_e( $data ); ?>" />
 			        <div style="position:absolute;background:#FFF;z-index:99;border-radius:100%;" class="colorpicker"></div>
 			    </div>
 			    <?php
@@ -175,7 +198,7 @@ class U_Next_Story_Admin_API {
 			case 'checkbox_multi':
 			case 'radio':
 			case 'select_multi':
-				$html .= '<br/><span class="description">' . $field['description'] . '</span>';
+				if(isset($field['description'])) $html .= '<span class="description">' . $field['description'] . '</span>';
 			break;
 
 			default:
@@ -217,6 +240,5 @@ class U_Next_Story_Admin_API {
 
 		return $data;
 	}
-
 
 }

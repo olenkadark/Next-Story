@@ -163,10 +163,18 @@ class U_Next_Story {
 		wp_register_style( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'css/frontend.css', array(), $this->_version );
 		wp_enqueue_style( $this->_token . '-frontend' );
 
-		$bg_color   = get_option( 'u_next_story_background_color', '#ffffff' );
-		$tx_color   = get_option( 'u_next_story_text_color', '#34495e' );
-		$h_bg_color = get_option( 'u_next_story_hover_background_color', '#34495e' );
-		$h_tx_color = get_option( 'u_next_story_hover_text_color', '#ffffff' );
+		$post_types = get_option('u_next_story_post_types', array('post'));
+		if( $post_types && is_array($post_types) && is_singular( $post_types ) ){
+			$bg_color   = get_option( 'u_next_story_background_color', '#ffffff' );
+			$tx_color   = get_option( 'u_next_story_text_color', '#34495e' );
+			$h_bg_color = get_option( 'u_next_story_hover_background_color', '#34495e' );
+			$h_tx_color = get_option( 'u_next_story_hover_text_color', '#ffffff' );
+		}else{
+			$bg_color   = get_option( 'u_next_story_menu_background_color', '#ffffff' );
+			$tx_color   = get_option( 'u_next_story_menu_text_color', '#34495e' );
+			$h_bg_color = get_option( 'u_next_story_menu_hover_background_color', '#34495e' );
+			$h_tx_color = get_option( 'u_next_story_menu_hover_text_color', '#ffffff' );
+		}
 
 		$rgb_bg_color = $this->hex2rgb($bg_color);
 		$rgb_bg_color = implode(',', $rgb_bg_color);
@@ -288,7 +296,7 @@ class U_Next_Story {
 	public function enqueue_scripts () {
 		wp_register_script( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'js/frontend' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
 		wp_enqueue_script( $this->_token . '-frontend' );
-	} // End enqueue_scripts ()
+    } // End enqueue_scripts ()
 
 	/**
 	 * Load admin CSS.
@@ -297,8 +305,8 @@ class U_Next_Story {
 	 * @return  void
 	 */
 	public function admin_enqueue_styles ( $hook = '' ) {
-		wp_register_style( $this->_token . '-admin', esc_url( $this->assets_url ) . 'css/admin.css', array(), $this->_version );
-		wp_enqueue_style( $this->_token . '-admin' );
+        wp_register_style( 'select2css', '//cdnjs.cloudflare.com/ajax/libs/select2/3.4.8/select2.css', false, '1.0', 'all' );
+        wp_register_style( $this->_token . '-admin', esc_url( $this->assets_url ) . 'css/admin.css', array('wp-color-picker', 'select2css'), $this->_version );
 	} // End admin_enqueue_styles ()
 
 	/**
@@ -308,8 +316,11 @@ class U_Next_Story {
 	 * @return  void
 	 */
 	public function admin_enqueue_scripts ( $hook = '' ) {
-		wp_register_script( $this->_token . '-admin', esc_url( $this->assets_url ) . 'js/admin' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
-		wp_enqueue_script( $this->_token . '-admin' );
+        wp_register_script( 'select2', '//cdnjs.cloudflare.com/ajax/libs/select2/3.4.8/select2.js', [], '1.0' );
+        wp_register_script( $this->_token . '-settings-js', $this->assets_url . 'js/settings.js', array( 'wp-color-picker', 'jquery' , 'select2'), rand());
+
+        wp_register_script( $this->_token . '-admin', esc_url( $this->assets_url ) . 'js/admin' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
+		#wp_enqueue_script( $this->_token . '-admin' );
 	} // End admin_enqueue_scripts ()
 
 	/**
@@ -376,11 +387,25 @@ class U_Next_Story {
 	 */
 	public function parse_post_link( $output, $format, $link, $post, $adjacent )
 	{
-		$multithumb = '';
+		$post_types = get_option('u_next_story_post_types', array('post'));
+		$menu       = get_option('u_next_story_menu', '');
 
+		if( $post_types && is_array($post_types) && is_singular( $post_types ) ){			
+		}else if( $menu && !empty($menu) ){			
+			$result = $this->get_adjacent_post_link($format, $link, $menu, $adjacent);
+			if( $result && is_array($result) ){
+				$output = $result[0];
+				$post   = $result[1];				
+			}else{
+				return;	
+			}
+		}
 		if ( !$post ){
 			return;
 		}
+		
+		$multithumb = $thumb = '';
+
 		if( strpos($output, '%multithumb')){
 
 			$media = get_attached_media( 'image', $post->ID );
@@ -436,13 +461,163 @@ class U_Next_Story {
 		}
 
 
-		$author = get_the_author_meta( 'display_name', $post->post_author );
+		$author = isset($post->post_author) ? get_the_author_meta( 'display_name', $post->post_author ) : '';
 		$output = str_replace( '%author', $author, $output );
 		return $output;
 	}
 
+	/**
+	 * Get adjacent item menu link.
+	 *
+	 * @since 1.0.1
+	 *
+	 * @param string       $format         Link anchor format.
+	 * @param string       $link           Link permalink format.
+	 * @param array|string $post           Object of menu item.
+	 * @param bool         $adjacent       Optional. Whether to display link to previous or next post. Default next.
+	 * @return string The link URL of the previous or next post in relation to the current menu item.
+	 */
+	public function get_adjacent_post_link($format, $link, $menu, $adjacent)
+	{
+		global $wp_query, $wp_rewrite;
+		if( !is_numeric($menu) ){
+			$location = $menu;
+			$menu = false;
+			$theme_locations = get_nav_menu_locations();
+			if( $theme_locations && isset($theme_locations[$location])){
+				$menu_obj = get_term( $theme_locations[$location], 'nav_menu' );				
+				if($menu_obj){
+					$menu = $menu_obj->term_id;
+				}
+			}
+		}
+		if( !$menu || empty($menu) ){
+			return;
+		}
+		$previous = $adjacent == 'previous' ? true : false;
+
+		$output = '';
+
+		$menu_items        = (array) wp_get_nav_menu_items($menu);
+		$loop_menu         = get_option('u_next_story_loop_menu', 'off');
+		$loop_menu         = $loop_menu == 'on' ? true : false;
+		$submenu           = get_option('u_next_story_submenu', 'include');
+		$current_menu_item = null;
+
+		_wp_menu_item_classes_by_context( $menu_items );
+
+		$sorted_menu_items = $menu_items_with_children = array();
+		foreach ( (array) $menu_items as $menu_item ) {
+			$sorted_menu_items[ $menu_item->menu_order ] = $menu_item;
+			if ( $menu_item->menu_item_parent )
+				$menu_items_with_children[ $menu_item->menu_item_parent ] = true;
+		}
+
+		// Add the menu-item-has-children class where applicable
+		if ( $menu_items_with_children ) {
+			foreach ( $sorted_menu_items as &$menu_item ) {
+				if ( isset( $menu_items_with_children[ $menu_item->ID ] ) )
+					$menu_item->classes[] = 'menu-item-has-children';
+			}
+		}
+
+		unset( $menu_items, $menu_item );
+
+		$menu_items = apply_filters( 'wp_nav_menu_objects', $sorted_menu_items, array() );
+		
+		$parent_ = 0;
+		foreach ( $menu_items as $key => $menu_item ) {
+			
+			if( isset($menu_item->classes) && is_array($menu_item->classes) && in_array('current-menu-item', $menu_item->classes)){
+				$current_menu_item = $key;
+				$parent_ = (int) $menu_item->menu_item_parent;
+				break;
+			}
+		}
+		if( is_null($current_menu_item) ){
+			return;
+		}
+		if( $parent_ == 0 && $submenu == 'only_submenu' ){
+			return;
+		}
+		$parents = array($parent_);
+		if( $parent_ > 0 && $submenu == 'only_submenu' ){
+			
+			$exit = false;
+			while (!$exit) {
+				foreach ( $menu_items as $key => $menu_item ) {
+					if( $menu_item->ID == $parent_ ){
+						$par = (int) $menu_item->menu_item_parent;
+						if( $par > 0 ){
+							$parents[] = $parent_  = $par;
+						}else{
+							$exit = true;
+						}
+						break;
+					}
+				}
+			}
+		}
+		
+		$post = false;
+		$i = $current_menu_item;
+		$d = -1;
+		$j = 0;
+		$count = count($menu_items);
+		while ( !$post && $d != $current_menu_item) {
+			
+			if( $adjacent == 'next' ){
+				$i++;
+				$j = 0;
+			}else if( $adjacent == 'previous' ){
+				$i--;
+				$j = $count;
+			}
+			if( $i > $count || $i < 0){
+				if( !$loop_menu ) break;
+				$i = $j;
+			}
+			$d = $i;
+
+			if(isset( $menu_items[$i] ) && strpos( $menu_items[$i]->url, '#' ) === false ){
+				$parent = (int) $menu_items[$i]->menu_item_parent;
+				if( $submenu == 'exclude' && $parent > 0){
+					continue;
+				}
+				if( $submenu == 'only_submenu' && ($parent == 0 || !in_array($parent, $parents)) ){
+					continue;
+				}
+				$post = $menu_items[$i];					
+			}
+		}
+		
+		if ( ! $post ) {
+			$output = '';
+		} else {
+			$title = $post->title;
+
+			if ( empty( $post->title ) )
+				$title = $previous ? __( 'Previous Post' ) : __( 'Next Post' );
+
+
+			//$date = mysql2date( get_option( 'date_format' ), $post->post_date );
+			$rel = $previous ? 'prev' : 'next';
+
+			$string = '<a href="' . $post->url . '" rel="'.$rel.'">';
+			$inlink = str_replace( '%title', $title, $link );
+			$inlink = str_replace( '%date', '', $inlink );
+			$inlink = $string . $inlink . '</a>';
+
+			$output = str_replace( '%link', $inlink, $format );
+			if( $post->type == 'post_type'){
+				$post = get_post($post->object_id);
+			}
+		}
+		return array($output, $post); 
+	}
+
 	// Process a single image ID (this is an AJAX handler)
-	function get_attachment_image($id, $size = array(90, 90) ) {
+	public function get_attachment_image($id, $size = array(90, 90) ) {
 
 		$image_src = wp_get_attachment_image_src( $id, $size );
 		if( !$image_src )
@@ -491,14 +666,27 @@ class U_Next_Story {
 	public function display_arrow_navigation()
 	{
 		$post_types = get_option('u_next_story_post_types', array('post'));
-		
+		$menu       = get_option('u_next_story_menu', '');		
+				
 		if( $post_types && is_array($post_types) && is_singular( $post_types ) ){
+			
 			$effects = get_option('u_next_story_effects_navigation', 'slide');
 			
 			if( !$effects ){
 				$effects = 'slide';
 			}
+
+			$this->get_template('arrow_icons.php');
+			$this->get_template($effects . '.php');
 			
+		}elseif( $menu && !empty($menu) ){
+			
+			$effects = get_option('u_next_story_effects_navigation_menu', 'slide');
+			
+			if( !$effects ){
+				$effects = 'slide';
+			}
+
 			$this->get_template('arrow_icons.php');
 			$this->get_template($effects . '.php');
 			

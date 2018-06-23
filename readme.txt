@@ -3,8 +3,8 @@ Contributors: elenkadark
 Donate link: http://ucat.biz/
 Tags: arrow navigation, navigation, navigator, post navigation, post navigator, next story
 Requires at least: 4.0
-Tested up to: 4.0
-Stable tag: 1.0.0
+Tested up to: 4.9
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,9 +36,25 @@ Features of this Post Navigator
 == Screenshots ==
 
 1. Settings page
-2. Example of navigation
+2. Style Slide
+3. Style Image Bar
+4. Style Circle Pop
+5. Style Round Slide
+6. Style Split
+7. Style Reveal
+8. Style Thumb Flip
+9. Style Double Flip
+10. Style Circle Slide
+11. Style Multi Thumb
+12. Style Circle Pop
+13. Style Diamond
+14. Style Fill Slide
+15. Style Fill Path
 
 == Changelog ==
 
-= 1.0.0 =
+= 16/02/2016 - version 1.1.1 =
+Feature added where you can choose menu for displaying arrow navigation.
+
+= 04/02/2016 - version 1.0.0 =
 Plugin release. Operate all the basic functions.

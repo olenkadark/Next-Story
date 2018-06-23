@@ -1,1 +1,75 @@
 .form-table .checkbox_multi{display: block;}
+
+.select2-container {
+    margin: 0 2px 0 2px;
+    display: block;}
+.tablenav.top #doaction, #doaction2, #post-query-submit {margin: 0px 4px 0 4px;}
+
+.edit-rule h3{
+    color: #333;
+    margin: 1.33em 0 0;
+}
+.edit-rule .form-field{
+    width: 100%;
+    clear: both;
+    padding: 0;
+    margin: 9px 0 0;
+}
+.edit-rule .form-field label {
+    display: block;
+    padding: 0 0 3px;
+}
+.edit-rule .form-field label:first-child{
+    font-weight: 600;
+}
+.edit-rule input[type=checkbox] + label{
+    display: inline-block;
+    font-weight: normal !important;
+    margin-top: -6px;
+}
+
+.edit-rule input[type=text],
+.edit-rule input[type=search],
+.edit-rule input[type=tel],
+.edit-rule input[type=time],
+.edit-rule input[type=url],
+.edit-rule input[type=week],
+.edit-rule input[type=password],
+.edit-rule input[type=color],
+.edit-rule input[type=date],
+.edit-rule input[type=datetime],
+.edit-rule input[type=datetime-local],
+.edit-rule input[type=email],
+.edit-rule input[type=month],
+.edit-rule textarea {
+    width: 95%;
+}
+
+.edit-rule input[type=number]{
+    width: auto;
+}
+.edit-rule select{
+    min-width: 50%;
+}
+
+.edit-rule .column-row {
+    width: 31.1%;
+    padding: 0 2% 0 0;
+    float: left;
+}
+
+#styles-options{
+    display: none;
+}
+
+@media only screen and (max-width: 1280px){
+    .edit-rule .column-row {
+        width: 48%;
+    }
+}
+@media only screen and (max-width: 1280px){
+    .edit-rule .column-row:first-child {
+        width: 100%;
+    }
+}
+

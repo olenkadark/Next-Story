@@ -1,4 +1,22 @@
 jQuery(document).ready(function($) {
+console.log('dddd');
+    /***** Select2 *****/
+    $( document.body ).on( "u_init_select", function() {
+        $( 'select.u-init-select:not(.u-inited)' ).select2().addClass('u-inited');
+    })
+        .on('change', '#apply_styles', function (e) {
+            if( $(this).is(':checked') ){
+                $('#styles-options').show();
+            }else{
+                $('#styles-options').hide();
+            }
+        })
+        .on('click', '#add_new_rule', function (e) {
+
+        });
+    if( $( 'select.u-init-select:not(.u-inited)' ).length > 0 ) {
+        $( document.body ).trigger( "u_init_select");
+    }
 
     /***** Colour picker *****/
 
