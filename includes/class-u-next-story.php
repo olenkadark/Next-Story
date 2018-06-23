@@ -93,6 +93,7 @@ class U_Next_Story {
 		$this->assets_url = esc_url( trailingslashit( plugins_url( '/assets/', $this->file ) ) );
 
 		$this->script_suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+		$this->script_suffix = '';
 
 		register_activation_hook( $this->file, array( $this, 'install' ) );
 
@@ -305,7 +306,7 @@ class U_Next_Story {
 	 * @return  void
 	 */
 	public function admin_enqueue_styles ( $hook = '' ) {
-        wp_register_style( 'select2css', '//cdnjs.cloudflare.com/ajax/libs/select2/3.4.8/select2.css', false, '1.0', 'all' );
+        wp_register_style( 'select2css', esc_url( $this->assets_url ) . 'css/select2.min.css', false, '4.0.6', 'all' );
         wp_register_style( $this->_token . '-admin', esc_url( $this->assets_url ) . 'css/admin.css', array('wp-color-picker', 'select2css'), $this->_version );
 	} // End admin_enqueue_styles ()
 
@@ -316,11 +317,17 @@ class U_Next_Story {
 	 * @return  void
 	 */
 	public function admin_enqueue_scripts ( $hook = '' ) {
-        wp_register_script( 'select2', '//cdnjs.cloudflare.com/ajax/libs/select2/3.4.8/select2.js', [], '1.0' );
-        wp_register_script( $this->_token . '-settings-js', $this->assets_url . 'js/settings.js', array( 'wp-color-picker', 'jquery' , 'select2'), rand());
+        wp_register_script( 'select2', $this->assets_url . 'js/select2.min.js', ['jquery'], '4.0.6' );
+        wp_register_script( 'jquery-block', $this->assets_url . 'js/jquery.blockUI.min.js', ['jquery'], '1.7.0 ');
+
+        $deph = ['wp-color-picker', 'jquery' , 'jquery-block', 'select2'];
+        wp_register_script( $this->_token . '-settings-js', $this->assets_url . 'js/settings' . $this->script_suffix . '.js', $deph, $this->_version);
+        wp_localize_script( $this->_token . '-settings-js', 'uns_settings_params', array(
+            'ajax_url'                  => admin_url( 'admin-ajax.php' ),
+            'default_nonce'             => wp_create_nonce( 'u_next_story_nonce' ),
+        ) );
 
         wp_register_script( $this->_token . '-admin', esc_url( $this->assets_url ) . 'js/admin' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
-		#wp_enqueue_script( $this->_token . '-admin' );
 	} // End admin_enqueue_scripts ()
 
 	/**

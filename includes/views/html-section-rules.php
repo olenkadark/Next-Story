@@ -1,4 +1,4 @@
-<table class="wp-list-table widefat fixed striped">
+<table class="wp-list-table widefat fixed striped" id="u_next_story_rules_table">
     <thead>
         <tr>
             <th id="name" class="manage-column column-name column-primary">
@@ -26,19 +26,11 @@
     <tbody>
         <?php
         if($rules && !empty($rules) && is_array($rules)): ?>
-            <?php foreach($rules as $rule_id => $rule): $the_rule = new U_Next_Story_Rule($rule); ?>
-            <tr data-id="<?php echo $rule_id; ?>">
-                <td class="column-name"><?php echo $the_rule->get_title(); ?></td>
-                <td class="column-include">
-                    <?php echo $the_rule->get_post_types(); ?>
-                </td>
-                <td class="column-exclude"><b>Post_types:sd</b></td>
-                <td class="column-actions">
-                    <button class="">Edit</button>
-                    <button class="">Delete</button>
-                </td>
-            </tr>
-            <?php endforeach; ?>
+            <?php foreach($rules as $rule_id => $rule) {
+                $the_rule = new U_Next_Story_Rule($rule);
+                include "html-rule-row.php";
+            }
+            ?>
         <?php else: ?>
             <tr class="no-items">
                 <td colspan="7"><?php _e('No Rules'); ?></td>

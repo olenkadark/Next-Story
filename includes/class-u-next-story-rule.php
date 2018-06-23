@@ -12,20 +12,20 @@ class U_Next_Story_Rule {
      */
     public $base = '';
 
-    protected $title              = '';
-    protected $post_types         = [];
-    protected $menu               = [];
-    protected $submenu            = 'include';
-    protected $loop_menu          = 'off';
-    protected $exclude            = [];
-    protected $effects_navigation = '';
-    protected $background_color   = '';
-    protected $text_color         = '';
-    protected $hover_background_color  = '';
-    protected $hover_text_color   = '';
-    protected $top_position       = '';
-    protected $scroll_position    = '';
-    protected $apply_styles       = false;
+    public $title              = '';
+    public $post_types         = [];
+    public $menu               = [];
+    public $submenu            = 'include';
+    public $loop_menu          = 'off';
+    public $exclude            = [];
+    public $effects_navigation = '';
+    public $background_color   = '';
+    public $text_color         = '';
+    public $hover_background_color  = '';
+    public $hover_text_color   = '';
+    public $top_position       = '';
+    public $scroll_position    = '';
+    public $apply_styles       = 'off';
 
     public function __construct($data=[])
     {
@@ -40,13 +40,14 @@ class U_Next_Story_Rule {
         }
     }
 
-    public function __call($name, $arguments)
-    {
-        if(strpos('get_', $name) === 0 ){
-            $property = str_replace('get_', '', $name);
-            return isset($this->$property) ? $this->$property : '';
+    public function get_post_types_html(){
+        $result = [];
+        foreach ($this->post_types as $post_type ){
+            $post_type_obj = get_post_type_object( $post_type );
+            $result[] = $post_type_obj->labels->singular_name;
         }
-        return '';
+        return implode(', ', $result);
     }
+
 
 }

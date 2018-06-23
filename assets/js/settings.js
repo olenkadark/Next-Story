@@ -1,7 +1,13 @@
 jQuery(document).ready(function($) {
-console.log('dddd');
+    $.blockUI.defaults.overlayCSS.cursor     = 'default';
+    $.blockUI.defaults.overlayCSS.background = '#fff';
+    $.blockUI.defaults.overlayCSS.opacity    = 0.6;
+    $.blockUI.defaults.message = null;
+    var $wrapper = $('#u_next_story_settings');
+    var $tb = $('#u_next_story_rules_table');
+
     /***** Select2 *****/
-    $( document.body ).on( "u_init_select", function() {
+    $( document ).on( "u_init_select", function() {
         $( 'select.u-init-select:not(.u-inited)' ).select2().addClass('u-inited');
     })
         .on('change', '#apply_styles', function (e) {
@@ -12,10 +18,51 @@ console.log('dddd');
             }
         })
         .on('click', '#add_new_rule', function (e) {
-
+            $wrapper.block();
+            $.ajax({
+                type: 'POST',
+                url: uns_settings_params.ajax_url,
+                dataType: "html",
+                data: { action: "u_next_story_add_new_rule", security: uns_settings_params.default_nonce },
+            })
+            .done(function(response) {
+                $('.no-items', $tb).hide();
+                if( $('.edit-rule', $tb).length ){
+                    $('.edit-rule', $tb).remove();
+                }
+                $('tbody', $tb).append(response);
+                $( document ).trigger( "u_init_select");
+                $('.color').wpColorPicker();
+            })
+            .fail(function(response) {
+                console.log("error");
+            })
+            .always(function(response) {
+                $wrapper.unblock();
+            });
+        })
+        .on('submit', '#edit-rule-form', function (e) {
+            $wrapper.block();
+            var data = $( this ).serialize();
+            $.ajax({
+                type: 'POST',
+                url: uns_settings_params.ajax_url,
+                dataType: "html",
+                data: data + '&action=u_next_story_save_rule&security='+uns_settings_params.default_nonce
+            })
+                .done(function(response) {
+                    $('.edit-rule', $tb).replaceWith(response);
+                })
+                .fail(function(response) {
+                    console.log("error");
+                })
+                .always(function(response) {
+                    $wrapper.unblock();
+                });
+            return false;
         });
     if( $( 'select.u-init-select:not(.u-inited)' ).length > 0 ) {
-        $( document.body ).trigger( "u_init_select");
+        $( document ).trigger( "u_init_select");
     }
 
     /***** Colour picker *****/
