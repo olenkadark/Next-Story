@@ -7,7 +7,7 @@
  * Author: Elena Zhyvohliad
  * Author URI: http://ucat.biz/
  * Requires at least: 4.0
- * Tested up to: 4.9
+ * Tested up to: 5.1.1
  *
  * Text Domain: u-next-story
  * Domain Path: /lang/
