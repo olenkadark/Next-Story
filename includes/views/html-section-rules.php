@@ -31,11 +31,11 @@
                 include "html-rule-row.php";
             }
             ?>
-        <?php else: ?>
-            <tr class="no-items">
-                <td colspan="7"><?php _e('No Rules'); ?></td>
-            </tr>
         <?php endif; ?>
+
+        <tr class="no-items" <?php echo $rules && !empty($rules) && is_array($rules) ? 'style="display: none;"' : ''; ?>>
+            <td colspan="7"><?php _e('No Rules'); ?></td>
+        </tr>
     </tbody>
 </table>
 <p class="submit">

@@ -1,9 +1,12 @@
-<tr class="edit-rule" data-id="<?php echo $rule_id; ?>">
+<?php
+$sections = U_Next_Story()->settings->settings[ 'general']['sections'];
+?>
+<tr class="edit-rule" data-ruleid="<?php echo $rule_id; ?>">
     <td colspan="7">
         <form action="#" id="edit-rule-form">
             <input type="hidden" name="rule_id" value="<?php echo $rule_id; ?>">
         <div class="form-field">
-            <input type="text" name="rule_title" id="rule_title" placeholder="<?php _e('Enter title here..', 'u-next-story'); ?>">
+            <input type="text" name="title" value="<?php echo $the_rule->title; ?>" id="rule_title" placeholder="<?php _e('Enter title here..', 'u-next-story'); ?>">
         </div>
         <?php
         foreach ($sections as $sid => $section){
@@ -37,7 +40,7 @@
         ?>
             <div class="submit widefat ">
                 <button type="submit" class="button-primary"><?php _e('Save rule', 'u-next-story'); ?></button>
-                <button class="button"><?php _e('Cancel', 'u-next-story'); ?></button>
+                <button type="button" class="button u-cancel-edit"><?php _e('Cancel', 'u-next-story'); ?></button>
             </div>
         </form>
     </td>

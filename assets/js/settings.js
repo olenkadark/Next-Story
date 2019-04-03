@@ -17,33 +17,118 @@ jQuery(document).ready(function($) {
                 $('#styles-options').hide();
             }
         })
-        .on('click', '#add_new_rule', function (e) {
-            $wrapper.block();
-            $.ajax({
-                type: 'POST',
-                url: uns_settings_params.ajax_url,
-                dataType: "html",
-                data: { action: "u_next_story_add_new_rule", security: uns_settings_params.default_nonce },
-            })
-            .done(function(response) {
-                $('.no-items', $tb).hide();
-                if( $('.edit-rule', $tb).length ){
-                    $('.edit-rule', $tb).remove();
-                }
-                $('tbody', $tb).append(response);
-                $( document ).trigger( "u_init_select");
-                $('.color').wpColorPicker();
-            })
-            .fail(function(response) {
-                console.log("error");
-            })
-            .always(function(response) {
-                $wrapper.unblock();
-            });
-        })
+         .on('click', '#add_new_rule', function (e) {
+             $wrapper.block();
+             $.ajax({
+                 type: 'POST',
+                 url: uns_settings_params.ajax_url,
+                 dataType: "html",
+                 data: { action: "u_next_story_add_new_rule", security: uns_settings_params.default_nonce },
+             })
+              .done(function(response) {
+                  $('tr', $tb).show();
+                  $('.no-items', $tb).hide();
+
+                  if( $('.edit-rule', $tb).length ){
+                      $('.edit-rule', $tb).remove();
+                  }
+
+                  $('tbody', $tb).append(response);
+                  $( document ).trigger( "u_init_select");
+                  $('.color').wpColorPicker();
+              })
+              .fail(function(response) {
+                  console.log("error");
+              })
+              .always(function(response) {
+                  $wrapper.unblock();
+              });
+         })
+         .on('click', '.u-cancel-edit', function (e) {
+             var $tr = $(this).closest('tr');
+             var ruleid = $tr.data('ruleid');
+
+             var $rule_raw = $('tr.u-rule-raw[data-ruleid="' + ruleid + '"]').length ? $('tr.u-rule-raw[data-ruleid="' + ruleid + '"]') : false;
+
+             if( $rule_raw !== false){
+                 $rule_raw.show();
+             }
+
+             $('.edit-rule', $tb).remove();
+
+         })
+         .on('click', '.uns-edit-rule', function (e) {
+             var $tr = $(this).closest('tr');
+             var ruleid = $tr.data('ruleid');
+
+             $wrapper.block();
+             $.ajax({
+                 type: 'POST',
+                 url: uns_settings_params.ajax_url,
+                 dataType: "html",
+                 data: {
+                     action: "u_next_story_edit_rule",
+                     security: uns_settings_params.default_nonce,
+                     rule_id: ruleid
+                 },
+             })
+              .done(function(response) {
+                  $('tbody tr', $tb).not('.no-items').show();
+
+                  if( $('.edit-rule', $tb).length ){
+                      $('.edit-rule', $tb).remove();
+                  }
+
+                  $tr.hide().after(response);
+
+                  $( document ).trigger( "u_init_select");
+                  $('.color').wpColorPicker();
+              })
+              .fail(function(response) {
+                  console.log("error");
+              })
+              .always(function(response) {
+                  $wrapper.unblock();
+              });
+         })
+         .on('click', '.uns-delete-rule', function (e) {
+             var $tr = $(this).closest('tr');
+             var ruleid = $tr.data('ruleid');
+
+             $wrapper.block();
+             $.ajax({
+                 type: 'POST',
+                 url: uns_settings_params.ajax_url,
+                 dataType: "json",
+                 data: {
+                     action: "u_next_story_delete_rule",
+                     security: uns_settings_params.default_nonce,
+                     rule_id: ruleid
+                 },
+             })
+              .done(function(response) {
+                  $tr.remove();
+
+                  if( !$('tbody tr', $tb).not('.no-items').length ){
+                      $('.no-items', $tb).show();
+                  }
+              })
+              .fail(function(response) {
+                  console.log("error");
+              })
+              .always(function(response) {
+                  $wrapper.unblock();
+              });
+         })
         .on('submit', '#edit-rule-form', function (e) {
-            $wrapper.block();
+
             var data = $( this ).serialize();
+            var $tr = $(this).closest('tr');
+            var ruleid = $tr.data('ruleid');
+
+            var $rule_raw = $('tr.u-rule-raw[data-ruleid="' + ruleid + '"]').length ? $('tr.u-rule-raw[data-ruleid="' + ruleid + '"]') : $tr;
+
+            $wrapper.block();
             $.ajax({
                 type: 'POST',
                 url: uns_settings_params.ajax_url,
@@ -51,7 +136,8 @@ jQuery(document).ready(function($) {
                 data: data + '&action=u_next_story_save_rule&security='+uns_settings_params.default_nonce
             })
                 .done(function(response) {
-                    $('.edit-rule', $tb).replaceWith(response);
+                    $rule_raw.replaceWith(response);
+                    $('.edit-rule', $tb).remove();
                 })
                 .fail(function(response) {
                     console.log("error");

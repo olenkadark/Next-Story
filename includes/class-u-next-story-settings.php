@@ -433,6 +433,7 @@ class U_Next_Story_Settings {
     public function rules_section($section){
         $sections = $this->settings[ 'general']['sections'];
         $rules = get_option( $this->base . 'rules');
+
         include "views/html-section-rules.php";
     }
 
