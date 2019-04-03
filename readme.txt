@@ -3,8 +3,8 @@ Contributors: elenkadark
 Donate link: http://ucat.biz/
 Tags: arrow navigation, navigation, navigator, post navigation, post navigator, next story
 Requires at least: 4.0
-Tested up to: 4.9
-Stable tag: 1.1.2
+Tested up to: 5.1.1
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,8 +53,16 @@ Features of this Post Navigator
 
 == Changelog ==
 
+= 03/04/2019 - version 2.0.0 =
+WordPress 5.1.1 compatibility.
+Update settings page
+Ability in admin area to modify %, that user should scroll to, to reveal the next story links.
+Limit next/previous links to certain category
+Added rulless for displaying navigation links
+
 = 16/02/2016 - version 1.1.1 =
 Feature added where you can choose menu for displaying arrow navigation.
 
 = 04/02/2016 - version 1.0.0 =
 Plugin release. Operate all the basic functions.
+
