@@ -49,7 +49,10 @@ class U_Next_Story_AJAX {
 	public static function add_new_rule(){
         check_ajax_referer( 'u_next_story_nonce', 'security' );
 	    $the_rule = new U_Next_Story_Rule();
-        $rule_id = time();
+		$rules    = get_option(U_Next_Story()->settings->base . 'rules', []);
+
+		$the_rule->priority = count($rules) + 1;
+        $rule_id = 'u_ns_' . time();
 
         include "views/html-edit-rule.php";
 	    wp_die();
@@ -81,6 +84,7 @@ class U_Next_Story_AJAX {
 	    update_option(U_Next_Story()->settings->base . 'rules', $rules, true);
 
         $the_rule = new U_Next_Story_Rule($rule);
+        $i = count($rules);
         include "views/html-rule-row.php";
         wp_die();
     }
@@ -91,6 +95,10 @@ class U_Next_Story_AJAX {
         $rules    = get_option(U_Next_Story()->settings->base . 'rules', []);
 
         unset($rules[$rule_id]);
+
+        $i = 0; foreach ($rules as $id => &$rule){ $i++;
+		    $rules[$id]['priority'] = $i;
+        }
 
 	    update_option(U_Next_Story()->settings->base . 'rules', $rules, true);
 

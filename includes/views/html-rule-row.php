@@ -1,4 +1,5 @@
 <tr data-ruleid="<?php echo $rule_id; ?>" class="u-rule-raw">
+    <td class="column-priority"><?php echo $the_rule->priority; ?></td>
     <td class="column-name"><?php echo $the_rule->title; ?></td>
     <td class="column-include">
         <?php echo $the_rule->get_post_types_html(); ?>

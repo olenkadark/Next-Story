@@ -648,31 +648,19 @@ class U_Next_Story {
 	public function display_arrow_navigation()
 	{
 		$post_types = get_option('u_next_story_post_types', array('post'));
-		$menu       = get_option('u_next_story_menu', '');		
+		$menu       = get_option('u_next_story_menu', '');
+		$effects    = get_option('u_next_story_effects_navigation', 'slide');
 				
-		if( $post_types && is_array($post_types) && is_singular( $post_types ) ){
-			
-			$effects = get_option('u_next_story_effects_navigation', 'slide');
-			
-			if( !$effects ){
-				$effects = 'slide';
-			}
+		/*if( $post_types && is_array($post_types) && is_singular( $post_types ) ){
 
 			$this->get_template('arrow_icons.php');
 			$this->get_template($effects . '.php');
 			
 		}elseif( $menu && !empty($menu) ){
-			
-			$effects = get_option('u_next_story_effects_navigation_menu', 'slide');
-			
-			if( !$effects ){
-				$effects = 'slide';
-			}
+		}*/
 
-			$this->get_template('arrow_icons.php');
-			$this->get_template($effects . '.php');
-			
-		}
+		$this->get_template('arrow_icons.php');
+		$this->get_template($effects . '.php');
 	}
 
 	function get_template( $template_name, $args = array(), $template_path = '', $default_path = '' ) {

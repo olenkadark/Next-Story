@@ -26,6 +26,7 @@ class U_Next_Story_Rule {
     public $top_position       = '';
     public $scroll_position    = '';
     public $apply_styles       = 'off';
+    public $priority           = 0;
 
     public function __construct($data=[])
     {

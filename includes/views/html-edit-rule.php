@@ -2,9 +2,10 @@
 $sections = U_Next_Story()->settings->settings[ 'general']['sections'];
 ?>
 <tr class="edit-rule" data-ruleid="<?php echo $rule_id; ?>">
-    <td colspan="7">
+    <td colspan="8">
         <form action="#" id="edit-rule-form">
             <input type="hidden" name="rule_id" value="<?php echo $rule_id; ?>">
+            <input type="hidden" name="priority" value="<?php echo $the_rule->priority; ?>">
         <div class="form-field">
             <input type="text" name="title" value="<?php echo $the_rule->title; ?>" id="rule_title" placeholder="<?php _e('Enter title here..', 'u-next-story'); ?>">
         </div>
