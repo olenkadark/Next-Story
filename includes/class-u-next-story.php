@@ -120,39 +120,6 @@ class U_Next_Story {
 		add_action( 'wp_footer', array( $this, 'display_arrow_navigation' ) );
 	} // End __construct ()
 
-	/**
-	 * Wrapper function to register a new post type
-	 * @param  string $post_type   Post type name
-	 * @param  string $plural      Post type item plural name
-	 * @param  string $single      Post type item single name
-	 * @param  string $description Description of post type
-	 * @return object              Post type class object
-	 */
-	public function register_post_type ( $post_type = '', $plural = '', $single = '', $description = '', $options = array() ) {
-
-		if ( ! $post_type || ! $plural || ! $single ) return;
-
-		$post_type = new U_Next_Story_Post_Type( $post_type, $plural, $single, $description, $options );
-
-		return $post_type;
-	}
-
-	/**
-	 * Wrapper function to register a new taxonomy
-	 * @param  string $taxonomy   Taxonomy name
-	 * @param  string $plural     Taxonomy single name
-	 * @param  string $single     Taxonomy plural name
-	 * @param  array  $post_types Post types to which this taxonomy applies
-	 * @return object             Taxonomy class object
-	 */
-	public function register_taxonomy ( $taxonomy = '', $plural = '', $single = '', $post_types = array(), $taxonomy_args = array() ) {
-
-		if ( ! $taxonomy || ! $plural || ! $single ) return;
-
-		$taxonomy = new U_Next_Story_Taxonomy( $taxonomy, $plural, $single, $post_types, $taxonomy_args );
-
-		return $taxonomy;
-	}
 
 	/**
 	 * Load frontend CSS.
@@ -165,17 +132,13 @@ class U_Next_Story {
 		wp_enqueue_style( $this->_token . '-frontend' );
 
 		$post_types = get_option('u_next_story_post_types', array('post'));
-		if( $post_types && is_array($post_types) && is_singular( $post_types ) ){
-			$bg_color   = get_option( 'u_next_story_background_color', '#ffffff' );
-			$tx_color   = get_option( 'u_next_story_text_color', '#34495e' );
-			$h_bg_color = get_option( 'u_next_story_hover_background_color', '#34495e' );
-			$h_tx_color = get_option( 'u_next_story_hover_text_color', '#ffffff' );
-		}else{
-			$bg_color   = get_option( 'u_next_story_menu_background_color', '#ffffff' );
-			$tx_color   = get_option( 'u_next_story_menu_text_color', '#34495e' );
-			$h_bg_color = get_option( 'u_next_story_menu_hover_background_color', '#34495e' );
-			$h_tx_color = get_option( 'u_next_story_menu_hover_text_color', '#ffffff' );
-		}
+
+		$bg_color   = get_option( 'u_next_story_background_color', '#ffffff' );
+		$tx_color   = get_option( 'u_next_story_text_color', '#34495e' );
+		$h_bg_color = get_option( 'u_next_story_hover_background_color', '#34495e' );
+		$h_tx_color = get_option( 'u_next_story_hover_text_color', '#ffffff' );
+		$top_position = get_option( 'u_next_story_top_position', '50' );
+
 
 		$rgb_bg_color = $this->hex2rgb($bg_color);
 		$rgb_bg_color = implode(',', $rgb_bg_color);
@@ -283,6 +246,10 @@ class U_Next_Story {
 				.u_next_story.nav-fillslide div span{
 					border-color: {$h_tx_color};
 				}
+				
+				nav.u_next_story > div{
+					top: {$top_position}%;
+				}
 
                 ";
         wp_add_inline_style( $this->_token . '-frontend', $custom_css );
@@ -297,6 +264,14 @@ class U_Next_Story {
 	public function enqueue_scripts () {
 		wp_register_script( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'js/frontend' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
 		wp_enqueue_script( $this->_token . '-frontend' );
+
+		$args_array = array(
+			'scroll_position' => get_option( 'u_next_story_scroll_position', 0 ),
+			'scroll_position_unit' => get_option( 'u_next_story_scroll_position_unit', 0 )
+		);
+		wp_localize_script( $this->_token . '-frontend', 'ucat_ns', $args_array );
+
+
     } // End enqueue_scripts ()
 
 	/**

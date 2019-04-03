@@ -262,10 +262,20 @@ class U_Next_Story_Settings {
                         array(
                             'id' 			=> 'scroll_position',
                             'label'			=> __( 'Visible on scroll position' , 'u-next-story' ),
-                            'description'	=> 'px. (' . __( 'Don\'t show navigation until you scroll down to the specific position' , 'u-next-story' ) . ')',
+                            'description'	=> __( 'Don\'t show navigation until you scroll down to the specific position' , 'u-next-story' ),
                             'type'			=> 'number',
                             'default'		=> '0'
-                        )
+                        ),
+	                    array(
+		                    'id' 			=> 'scroll_position_unit',
+		                    'label'			=> __( 'Scroll position unit' , 'u-next-story' ),
+		                    'type'			=> 'select',
+		                    'options'		=> array(
+			                    'px'        => 'px',
+			                    '%'         => '%',
+		                    ),
+		                    'default'		=> 'px'
+	                    ),
                     )
 
                 ]
