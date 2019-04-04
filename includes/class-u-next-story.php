@@ -1,14 +1,16 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 class U_Next_Story {
 
 	/**
 	 * The single instance of U_Next_Story.
-	 * @var 	object
-	 * @access  private
-	 * @since 	1.0.0
+	 * @var    object
+	 * @access   private
+	 * @since    1.0.0
 	 */
 	private static $_instance = null;
 
@@ -82,13 +84,13 @@ class U_Next_Story {
 	 * @since   1.0.0
 	 * @return  void
 	 */
-	public function __construct ( $file = '', $version = '1.0.0' ) {
+	public function __construct( $file = '', $version = '1.0.0' ) {
 		$this->_version = $version;
-		$this->_token = 'u_next_story';
+		$this->_token   = 'u_next_story';
 
 		// Load plugin environment variables
-		$this->file = $file;
-		$this->dir = dirname( $this->file );
+		$this->file       = $file;
+		$this->dir        = dirname( $this->file );
 		$this->assets_dir = trailingslashit( $this->dir ) . 'assets';
 		$this->assets_url = esc_url( trailingslashit( plugins_url( '/assets/', $this->file ) ) );
 
@@ -118,10 +120,6 @@ class U_Next_Story {
 		add_filter( 'previous_post_link', array( $this, 'parse_post_link' ), 999, 5 );
 		add_filter( 'next_post_link', array( $this, 'parse_post_link' ), 999, 5 );
 
-		add_filter( 'get_previous_post_excluded_terms', array( $this, 'post_excluded_terms' ), 999, 5 );
-		add_filter( 'get_next_post_excluded_terms', array( $this, 'post_excluded_terms' ), 999, 5 );
-
-
 		add_action( 'wp_footer', array( $this, 'display_arrow_navigation' ) );
 	} // End __construct ()
 
@@ -132,26 +130,26 @@ class U_Next_Story {
 	 * @since   1.0.0
 	 * @return void
 	 */
-	public function enqueue_styles () {
+	public function enqueue_styles() {
 		wp_register_style( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'css/frontend.css', array(), $this->_version );
 		wp_enqueue_style( $this->_token . '-frontend' );
 
-		$post_types = get_option('u_next_story_post_types', []);
+		$post_types = get_option( 'u_next_story_post_types', [] );
 
-		$bg_color   = get_option( 'u_next_story_background_color', '#ffffff' );
-		$tx_color   = get_option( 'u_next_story_text_color', '#34495e' );
-		$h_bg_color = get_option( 'u_next_story_hover_background_color', '#34495e' );
-		$h_tx_color = get_option( 'u_next_story_hover_text_color', '#ffffff' );
+		$bg_color     = get_option( 'u_next_story_background_color', '#ffffff' );
+		$tx_color     = get_option( 'u_next_story_text_color', '#34495e' );
+		$h_bg_color   = get_option( 'u_next_story_hover_background_color', '#34495e' );
+		$h_tx_color   = get_option( 'u_next_story_hover_text_color', '#ffffff' );
 		$top_position = get_option( 'u_next_story_top_position', '50' );
 
 
-		$rgb_bg_color = $this->hex2rgb($bg_color);
-		$rgb_bg_color = implode(',', $rgb_bg_color);
+		$rgb_bg_color = $this->hex2rgb( $bg_color );
+		$rgb_bg_color = implode( ',', $rgb_bg_color );
 
-		$rgb_h_tx_color = $this->hex2rgb($h_tx_color);
-		$rgb_h_tx_color = implode(',', $rgb_h_tx_color);
-		
-        $custom_css = "
+		$rgb_h_tx_color = $this->hex2rgb( $h_tx_color );
+		$rgb_h_tx_color = implode( ',', $rgb_h_tx_color );
+
+		$custom_css = "
         		.u_next_story.nav-reveal div{
 					background-color: rgba({$rgb_bg_color},0.6);
 				}
@@ -257,7 +255,7 @@ class U_Next_Story {
 				}
 
                 ";
-        wp_add_inline_style( $this->_token . '-frontend', $custom_css );
+		wp_add_inline_style( $this->_token . '-frontend', $custom_css );
 	} // End enqueue_styles ()
 
 	/**
@@ -266,18 +264,18 @@ class U_Next_Story {
 	 * @since   1.0.0
 	 * @return  void
 	 */
-	public function enqueue_scripts () {
+	public function enqueue_scripts() {
 		wp_register_script( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'js/frontend' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
 		wp_enqueue_script( $this->_token . '-frontend' );
 
 		$args_array = array(
-			'scroll_position' => get_option( 'u_next_story_scroll_position', 0 ),
+			'scroll_position'      => get_option( 'u_next_story_scroll_position', 0 ),
 			'scroll_position_unit' => get_option( 'u_next_story_scroll_position_unit', 0 )
 		);
 		wp_localize_script( $this->_token . '-frontend', 'ucat_ns', $args_array );
 
 
-    } // End enqueue_scripts ()
+	} // End enqueue_scripts ()
 
 	/**
 	 * Load admin CSS.
@@ -285,9 +283,12 @@ class U_Next_Story {
 	 * @since   1.0.0
 	 * @return  void
 	 */
-	public function admin_enqueue_styles ( $hook = '' ) {
-        wp_register_style( 'select2css', esc_url( $this->assets_url ) . 'css/select2.min.css', false, '4.0.6', 'all' );
-        wp_register_style( $this->_token . '-admin', esc_url( $this->assets_url ) . 'css/admin.css', array('wp-color-picker', 'select2css'), $this->_version );
+	public function admin_enqueue_styles( $hook = '' ) {
+		wp_register_style( 'select2css', esc_url( $this->assets_url ) . 'css/select2.min.css', false, '4.0.6', 'all' );
+		wp_register_style( $this->_token . '-admin', esc_url( $this->assets_url ) . 'css/admin.css', array(
+			'wp-color-picker',
+			'select2css'
+		), $this->_version );
 	} // End admin_enqueue_styles ()
 
 	/**
@@ -296,18 +297,18 @@ class U_Next_Story {
 	 * @since   1.0.0
 	 * @return  void
 	 */
-	public function admin_enqueue_scripts ( $hook = '' ) {
-        wp_register_script( 'select2', $this->assets_url . 'js/select2.min.js', ['jquery'], '4.0.6' );
-        wp_register_script( 'jquery-block', $this->assets_url . 'js/jquery.blockUI.min.js', ['jquery'], '1.7.0 ');
+	public function admin_enqueue_scripts( $hook = '' ) {
+		wp_register_script( 'select2', $this->assets_url . 'js/select2.min.js', [ 'jquery' ], '4.0.6' );
+		wp_register_script( 'jquery-block', $this->assets_url . 'js/jquery.blockUI.min.js', [ 'jquery' ], '1.7.0 ' );
 
-        $deph = ['wp-color-picker', 'jquery' , 'jquery-block', 'select2'];
-        wp_register_script( $this->_token . '-settings-js', $this->assets_url . 'js/settings' . $this->script_suffix . '.js', $deph, $this->_version);
-        wp_localize_script( $this->_token . '-settings-js', 'uns_settings_params', array(
-            'ajax_url'                  => admin_url( 'admin-ajax.php' ),
-            'default_nonce'             => wp_create_nonce( 'u_next_story_nonce' ),
-        ) );
+		$deph = [ 'wp-color-picker', 'jquery', 'jquery-block', 'select2' ];
+		wp_register_script( $this->_token . '-settings-js', $this->assets_url . 'js/settings' . $this->script_suffix . '.js', $deph, $this->_version );
+		wp_localize_script( $this->_token . '-settings-js', 'uns_settings_params', array(
+			'ajax_url'      => admin_url( 'admin-ajax.php' ),
+			'default_nonce' => wp_create_nonce( 'u_next_story_nonce' ),
+		) );
 
-        wp_register_script( $this->_token . '-admin', esc_url( $this->assets_url ) . 'js/admin' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
+		wp_register_script( $this->_token . '-admin', esc_url( $this->assets_url ) . 'js/admin' . $this->script_suffix . '.js', array( 'jquery' ), $this->_version );
 	} // End admin_enqueue_scripts ()
 
 	/**
@@ -316,7 +317,7 @@ class U_Next_Story {
 	 * @since   1.0.0
 	 * @return  void
 	 */
-	public function load_localisation () {
+	public function load_localisation() {
 		load_plugin_textdomain( 'u-next-story', false, dirname( plugin_basename( $this->file ) ) . '/lang/' );
 	} // End load_localisation ()
 
@@ -326,44 +327,47 @@ class U_Next_Story {
 	 * @since   1.0.0
 	 * @return  void
 	 */
-	public function load_plugin_textdomain () {
-	    $domain = 'u-next-story';
+	public function load_plugin_textdomain() {
+		$domain = 'u-next-story';
 
-	    $locale = apply_filters( 'plugin_locale', get_locale(), $domain );
+		$locale = apply_filters( 'plugin_locale', get_locale(), $domain );
 
-	    load_textdomain( $domain, WP_LANG_DIR . '/' . $domain . '/' . $domain . '-' . $locale . '.mo' );
-	    load_plugin_textdomain( $domain, false, dirname( plugin_basename( $this->file ) ) . '/lang/' );
+		load_textdomain( $domain, WP_LANG_DIR . '/' . $domain . '/' . $domain . '-' . $locale . '.mo' );
+		load_plugin_textdomain( $domain, false, dirname( plugin_basename( $this->file ) ) . '/lang/' );
 	} // End load_plugin_textdomain ()
 
 	/**
-	* Convert Hex Color to RGB
-	*
-	* @access  public
-	* @param string  $hex   The hex code.
-	* @return  array
-	*/
-	public function hex2rgb($hex) {
-	   $hex = str_replace("#", "", $hex);
+	 * Convert Hex Color to RGB
+	 *
+	 * @access  public
+	 *
+	 * @param string $hex The hex code.
+	 *
+	 * @return  array
+	 */
+	public function hex2rgb( $hex ) {
+		$hex = str_replace( "#", "", $hex );
 
-	   if(strlen($hex) == 3) {
-	      $r = hexdec(substr($hex,0,1).substr($hex,0,1));
-	      $g = hexdec(substr($hex,1,1).substr($hex,1,1));
-	      $b = hexdec(substr($hex,2,1).substr($hex,2,1));
-	   } else {
-	      $r = hexdec(substr($hex,0,2));
-	      $g = hexdec(substr($hex,2,2));
-	      $b = hexdec(substr($hex,4,2));
-	   }
-	   $rgb = array($r, $g, $b);
+		if ( strlen( $hex ) == 3 ) {
+			$r = hexdec( substr( $hex, 0, 1 ) . substr( $hex, 0, 1 ) );
+			$g = hexdec( substr( $hex, 1, 1 ) . substr( $hex, 1, 1 ) );
+			$b = hexdec( substr( $hex, 2, 1 ) . substr( $hex, 2, 1 ) );
+		} else {
+			$r = hexdec( substr( $hex, 0, 2 ) );
+			$g = hexdec( substr( $hex, 2, 2 ) );
+			$b = hexdec( substr( $hex, 4, 2 ) );
+		}
+		$rgb = array( $r, $g, $b );
 
-	   return $rgb; // returns an array with the rgb values
+		return $rgb; // returns an array with the rgb values
 	}
 
 	/**
 	 * Check if post is in a menu
 	 *
-	 * @param $menu menu name, id, or slug
+	 * @param $menu      menu name, id, or slug
 	 * @param $object_id int post object id of page
+	 *
 	 * @return bool true if object is in menu
 	 */
 	public function object_is_in_menu( $menu = null, $object_id = null ) {
@@ -372,14 +376,15 @@ class U_Next_Story {
 		$menu_object = wp_get_nav_menu_items( esc_attr( $menu ) );
 
 		// stop if there isn't a menu
-		if( ! $menu_object )
+		if ( ! $menu_object ) {
 			return false;
+		}
 
 		// get the object_id field out of the menu object
 		$menu_items = wp_list_pluck( $menu_object, 'object_id' );
 
 		// use the current post if object_id is not specified
-		if( !$object_id ) {
+		if ( ! $object_id ) {
 			global $post;
 			$object_id = get_queried_object_id();
 		}
@@ -392,8 +397,57 @@ class U_Next_Story {
 	/**
 	 * @return array
 	 */
-	public function get_rule_settings(){
+	public function get_rule_settings() {
 
+		$loop_menu = get_option( 'u_next_story_loop_menu', 'off' );
+		$loop_menu = $loop_menu == 'on' ? true : false;
+
+		$_p       = get_post();
+		$settings = [
+			'object_id'  => $_p->ID,
+			'post_types' => get_option( 'u_next_story_post_types', [] ),
+			'menu'       => get_option( 'u_next_story_menu', '' ),
+			'loop_menu'  => $loop_menu,
+			'submenu'    => get_option( 'u_next_story_submenu', 'include' ),
+			'exclude'    => get_option( 'u_next_story_exclude', 'include' ),
+		];
+
+		$rules = get_option( U_Next_Story()->settings->base . 'rules', [] );
+
+		$find = false;
+		foreach ( $rules as $rule ) {
+			if ( $find ) {
+				break;
+			}
+
+			if ( isset( $rule[ 'post_types' ] ) && ! empty( $rule[ 'post_types' ] ) && is_array( $rule[ 'post_types' ] ) && is_singular( $rule[ 'post_types' ] ) ) {
+				$settings[ 'post_types' ] = $rule[ 'post_types' ];
+				$find                     = true;
+			}
+
+			if ( isset( $rule[ 'menu' ] ) && ! empty( $rule[ 'menu' ] ) && ! empty( $rule[ 'menu' ] ) && $this->object_is_in_menu( $rule[ 'menu' ], $settings[ 'object_id' ] ) ) {
+				$settings[ 'menu' ] = $rule[ 'menu' ];
+				$find               = true;
+			}
+
+			if ( $find ) {
+				$loop_menu = isset( $rule[ 'loop_menu' ] );
+				$loop_menu = $loop_menu == 'on' ? true : false;
+
+				$settings[ 'loop_menu' ] = $loop_menu;
+				$settings[ 'submenu' ]   = isset( $rule[ 'submenu' ] ) ? $rule[ 'submenu' ] : 'include';
+				$settings[ 'exclude' ]   = isset( $rule[ 'exclude' ] ) ? $rule[ 'exclude' ] : [];
+			}
+		}
+		$exclude = [];
+		foreach ($settings[ 'exclude' ] as $ex ){
+			$exclude = array_merge($exclude, $ex);
+		}
+
+		$settings[ 'exclude' ] = array_map('absint', $exclude);
+
+
+		return $settings;
 	}
 
 	/**
@@ -409,134 +463,99 @@ class U_Next_Story {
 	 * @param WP_Post $post     The adjacent post.
 	 * @param string  $adjacent Whether the post is previous or next.
 	 */
-	public function parse_post_link( $output, $format, $link, $post, $adjacent )
-	{
+	public function parse_post_link( $output, $format, $link, $post, $adjacent ) {
 
 		$settings = $this->get_rule_settings();
 
-		$post_types = get_option('u_next_story_post_types', []);
-		$menu       = get_option('u_next_story_menu', '');
-		$rules      = get_option(U_Next_Story()->settings->base . 'rules', []);
+		$post_types = $settings[ 'post_types' ];
+		$menu       = $settings[ 'menu' ];
 
-
-		$loop_menu         = get_option('u_next_story_loop_menu', 'off');
-		$loop_menu         = $loop_menu == 'on' ? true : false;
-
-		$_p = get_post();
-		$settings = array(
-			'object_id' => $_p->ID,
-			'loop_menu' => $loop_menu,
-			'submenu'   => get_option('u_next_story_submenu', 'include'),
-			'exclude'   => get_option('u_next_story_exclude', 'include'),
-		);
-
-
-
-		$find = false;
-		foreach ($rules as $rule){
-			if( $find ) break;
-
-
-			if( isset($rule['post_types']) && !empty($rule['post_types']) && is_array($rule['post_types']) && is_singular( $rule['post_types'] ) ){
-				$post_types = $rule['post_types'];
-				$find = true;
-			}
-
-			if( isset($rule['menu']) && !empty($rule['menu'])  && !empty($rule['menu']) && $this->object_is_in_menu($rule['menu'], $settings['object_id']) ){
-				$menu = $rule['menu'];
-				$find = true;
-			}
-			if( $find ){
-				$loop_menu = isset($rule['loop_menu']);
-				$loop_menu = $loop_menu == 'on' ? true : false;
-
-				$settings['loop_menu'] = $loop_menu;
-				$settings['submenu']   = isset($rule['submenu']) ? $rule['submenu'] : 'include';
-				$settings['exclude']   = isset($rule['exclude']) ? $rule['exclude'] : [];
-			}
-		}
-
-
-		if( $post_types && is_array($post_types) && is_singular( $post_types ) ){
-
-		}else if( $menu && !empty($menu) ){
-
-			$result = $this->get_adjacent_menu_link($format, $link, $menu, $adjacent, $settings);
+		if ( $post_types && is_array( $post_types ) && is_singular( $post_types ) ) {
+			$result = $this->get_adjacent_post_link($format, $link, $post_types, $adjacent, $settings);
 			if( $result && is_array($result) ){
 				$output = $result[0];
 				$post   = $result[1];
 			}else{
-				return;	
+				return;
+			}
+		} else if ( $menu && ! empty( $menu ) ) {
+
+			$result = $this->get_adjacent_menu_link( $format, $link, $menu, $adjacent, $settings );
+			if ( $result && is_array( $result ) ) {
+				$output = $result[ 0 ];
+				$post   = $result[ 1 ];
+			} else {
+				return;
 			}
 
 
-		}else{
+		} else {
 			return;
 		}
 
-		if ( !$post ){
+		if ( ! $post ) {
 			return;
 		}
-		
+
 		$multithumb = $thumb = '';
 
-		if( strpos($output, '%multithumb')){
+		if ( strpos( $output, '%multithumb' ) ) {
 
 			$media = get_attached_media( 'image', $post->ID );
-			if( $media ){
-				$size = array(62, 64);
-				$i = 0;
-				foreach ($media as $im) { $i++;
-					$url   = $this->get_attachment_image( $im->ID, $size );
-					if( $url ){
-						$multithumb .= '<img src="'.$url .'" />';			
+			if ( $media ) {
+				$size = array( 62, 64 );
+				$i    = 0;
+				foreach ( $media as $im ) {
+					$i ++;
+					$url = $this->get_attachment_image( $im->ID, $size );
+					if ( $url ) {
+						$multithumb .= '<img src="' . $url . '" />';
 					}
-					$size[0] -= 16;
-					$size[1] -= 16;
-					if( $i == 3) break;
+					$size[ 0 ] -= 16;
+					$size[ 1 ] -= 16;
+					if ( $i == 3 ) {
+						break;
+					}
 				}
 			}
 			$output = str_replace( '%multithumb', $multithumb, $output );
 
-		}
-		else if( strpos($output, '%thumb130')){
-			$url   = $this->get_attachment_image( get_post_thumbnail_id($post->ID), array(130, 100) );
-			if( $url ){
-				$thumb  = '<img src="'.$url .'" />';			
+		} else if ( strpos( $output, '%thumb130' ) ) {
+			$url = $this->get_attachment_image( get_post_thumbnail_id( $post->ID ), array( 130, 100 ) );
+			if ( $url ) {
+				$thumb = '<img src="' . $url . '" />';
 			}
 			$output = str_replace( '%thumb130', $thumb, $output );
-		}
-		else if( strpos($output, '%thumb135')){
-			$url   = $this->get_attachment_image( get_post_thumbnail_id($post->ID), array(135, 800) );
-			if( $url ){
-				$thumb  = '<img src="'.$url .'" />';			
+		} else if ( strpos( $output, '%thumb135' ) ) {
+			$url = $this->get_attachment_image( get_post_thumbnail_id( $post->ID ), array( 135, 800 ) );
+			if ( $url ) {
+				$thumb = '<img src="' . $url . '" />';
 			}
 			$output = str_replace( '%thumb135', $thumb, $output );
-		}
-		else if( strpos($output, '%thumb100')){
-			$url   = $this->get_attachment_image( get_post_thumbnail_id($post->ID), array(100, 100) );
-			if( $url ){
-				$thumb  = '<img src="'.$url .'" />';			
+		} else if ( strpos( $output, '%thumb100' ) ) {
+			$url = $this->get_attachment_image( get_post_thumbnail_id( $post->ID ), array( 100, 100 ) );
+			if ( $url ) {
+				$thumb = '<img src="' . $url . '" />';
 			}
 			$output = str_replace( '%thumb100', $thumb, $output );
-		}
-		else if( strpos($output, '%thumb200')){
-			$url   = $this->get_attachment_image( get_post_thumbnail_id($post->ID), array(200, 112) );
-			if( $url ){
-				$thumb  = '<img src="'.$url .'" />';			
+		} else if ( strpos( $output, '%thumb200' ) ) {
+			$url = $this->get_attachment_image( get_post_thumbnail_id( $post->ID ), array( 200, 112 ) );
+			if ( $url ) {
+				$thumb = '<img src="' . $url . '" />';
 			}
 			$output = str_replace( '%thumb200', $thumb, $output );
 		} else {
-			$url   = $this->get_attachment_image( get_post_thumbnail_id($post->ID) );
-			if( $url ){
-				$thumb  = '<img src="'.$url .'" />';			
+			$url = $this->get_attachment_image( get_post_thumbnail_id( $post->ID ) );
+			if ( $url ) {
+				$thumb = '<img src="' . $url . '" />';
 			}
 			$output = str_replace( '%thumb', $thumb, $output );
 		}
 
 
-		$author = isset($post->post_author) ? get_the_author_meta( 'display_name', $post->post_author ) : '';
+		$author = isset( $post->post_author ) ? get_the_author_meta( 'display_name', $post->post_author ) : '';
 		$output = str_replace( '%author', $author, $output );
+
 		return $output;
 	}
 
@@ -545,164 +564,202 @@ class U_Next_Story {
 	 *
 	 * @since 1.0.1
 	 *
-	 * @param string       $format         Link anchor format.
-	 * @param string       $link           Link permalink format.
-	 * @param array|string $post           Object of menu item.
-	 * @param bool         $adjacent       Whether to display link to previous or next post. Default next.
-	 * @param array        $settings       Settings
-	 * @return string The link URL of the previous or next post in relation to the current menu item.
+	 * @param string       $format   Link anchor format.
+	 * @param string       $link     Link permalink format.
+	 * @param array|string $post     Object of menu item.
+	 * @param bool         $adjacent Whether to display link to previous or next post. Default next.
+	 * @param array        $settings Settings
+	 *
+	 * @return array The link URL of the previous or next post in relation to the current menu item.
 	 */
-	public function get_adjacent_menu_link($format, $link, $menu, $adjacent, $settings)
-	{
+	public function get_adjacent_menu_link( $format, $link, $menu, $adjacent, $settings ) {
 		global $wp_query, $wp_rewrite;
-		if( !is_numeric($menu) ){
-			$location = $menu;
-			$menu = false;
+		if ( ! is_numeric( $menu ) ) {
+			$location        = $menu;
+			$menu            = false;
 			$theme_locations = get_nav_menu_locations();
-			if( $theme_locations && isset($theme_locations[$location])){
-				$menu_obj = get_term( $theme_locations[$location], 'nav_menu' );
-				if($menu_obj){
+			if ( $theme_locations && isset( $theme_locations[ $location ] ) ) {
+				$menu_obj = get_term( $theme_locations[ $location ], 'nav_menu' );
+				if ( $menu_obj ) {
 					$menu = $menu_obj->term_id;
 				}
 			}
 		}
 
-		if( !$menu || empty($menu) ){
+		if ( ! $menu || empty( $menu ) ) {
 			return false;
 		}
-		$previous = $adjacent == 'previous' ? true : false;
+		$previous = $adjacent === 'previous';
 
 		$output = '';
 
-		$menu_items        = (array) wp_get_nav_menu_items($menu);
-		$loop_menu         = $settings['loop_menu'];
-		$submenu           = $settings['submenu'];
-		$object_id         = $settings['object_id'];
+		$menu_items        = (array) wp_get_nav_menu_items( $menu );
+		$loop_menu         = $settings[ 'loop_menu' ];
+		$submenu           = $settings[ 'submenu' ];
+		$object_id         = $settings[ 'object_id' ];
 		$current_menu_item = null;
 
 
-		switch ($submenu){
+		switch ( $submenu ) {
 			case 'exclude':
 				foreach ( $menu_items as $key => $menu_item ) {
-					if(  absint($menu_item->menu_item_parent) > 0 ){
-						unset($menu_items[$key]);
+					if ( absint( $menu_item->menu_item_parent ) > 0 ) {
+						unset( $menu_items[ $key ] );
 						continue;
 					}
 				}
 				break;
 			case 'only_submenu':
 				foreach ( $menu_items as $key => $menu_item ) {
-					if(  absint($menu_item->menu_item_parent) === 0 ){
-						unset($menu_items[$key]);
+					if ( absint( $menu_item->menu_item_parent ) === 0 ) {
+						unset( $menu_items[ $key ] );
 						continue;
 					}
 				}
 				break;
 		}
 
-		$menu_items = array_values($menu_items);
+		$menu_items = array_values( $menu_items );
 
 		foreach ( $menu_items as $key => $menu_item ) {
-			$menu_object_id = isset($menu_item->object_id) ? absint($menu_item->object_id) : 0;
-			if( $menu_object_id === $object_id ){
+			$menu_object_id = isset( $menu_item->object_id ) ? absint( $menu_item->object_id ) : 0;
+			if ( $menu_object_id === $object_id ) {
 				$current_menu_item = $key;
 				break;
 			}
 		}
 
-		if( is_null($current_menu_item) ){
+		if ( is_null( $current_menu_item ) ) {
 			return false;
 		}
 
 
 		$need_key = $current_menu_item + 1;
-		end($menu_items);         // move the internal pointer to the end of the array
-		$last_key = key($menu_items);
-		reset($menu_items);
+		end( $menu_items );         // move the internal pointer to the end of the array
+		$last_key = key( $menu_items );
+		reset( $menu_items );
 
-		switch ($adjacent){
+		switch ( $adjacent ) {
 			case 'previous':
 				$need_key = $current_menu_item - 1;
-				if( $current_menu_item === 0 && $loop_menu ){
+				if ( $current_menu_item === 0 && $loop_menu ) {
 					$need_key = $last_key;
 				}
 				break;
 			case 'next':
-				if( $current_menu_item === $last_key && $loop_menu ){
+				if ( $current_menu_item === $last_key && $loop_menu ) {
 					$need_key = 0;
 				}
 				break;
 		}
 
-		$post = isset( $menu_items[$need_key]) ? $menu_items[$need_key] : false;
+		$post = isset( $menu_items[ $need_key ] ) ? $menu_items[ $need_key ] : false;
 
 		if ( ! $post ) {
 			$output = '';
 		} else {
 //			var_dump($post);
-			$title = $post->title;
+			//$title = $post->title;
+			$title = the_title_attribute( array( 'echo' => false, 'post' => $post ) );
 
-			if ( empty( $title ) )
+			if ( empty( $title ) ) {
 				$title = $previous ? __( 'Previous Post' ) : __( 'Next Post' );
+			}
 
 
 			//$date = mysql2date( get_option( 'date_format' ), $post->post_date );
 			$rel = $previous ? 'prev' : 'next';
 
-			$string = '<a href="' . $post->url . '" rel="'.$rel.'">';
+			$string = '<a href="' . $post->url . '" rel="' . $rel . '">';
 			$inlink = str_replace( '%title', $title, $link );
 			$inlink = str_replace( '%date', '', $inlink );
 			$inlink = $string . $inlink . '</a>';
 
 			$output = str_replace( '%link', $inlink, $format );
-			if( $post->type == 'post_type'){
-				$post = get_post($post->object_id);
+			if ( $post->type == 'post_type' ) {
+				$post = get_post( $post->object_id );
 			}
 		}
 
-		return array($output, $post);
+		return array( $output, $post );
 	}
 
+	/**
+	 *
+	 * @return array The link URL of the previous or next post in relation to the current menu item.
+	 */
+	public function get_adjacent_post_link( $format, $link, $post_type, $adjacent, $settings ) {
+		$previous = $adjacent === 'previous';
+
+		if( $settings['exclude'] && !empty($settings['exclude']) && is_array($settings['exclude']) ){
+			$post = get_adjacent_post( false, $settings['exclude'], $previous );
+		}else{
+			$post = get_adjacent_post(false, '', $previous);
+		}
+
+		if ( empty( $post ) )
+			return;
+
+		$title    = get_the_title($post );
+
+		if ( empty( $title ) )
+			$title = $previous ? __( 'Previous Post' ) : __( 'Next Post' );
+
+		$rel = $previous ? 'prev' : 'next';
+
+		$string = '<a href="' . get_permalink( $post ) . '" rel="' . $rel . '">';
+		$inlink = str_replace( '%title', $title, $link );
+		$inlink = str_replace( '%date', '', $inlink );
+		$inlink = $string . $inlink . '</a>';
+
+		$output = str_replace( '%link', $inlink, $format );
+
+		return array( $output, $post );
+	}
 
 	// Process a single image ID (this is an AJAX handler)
-	public function get_attachment_image($id, $size = array(90, 90) ) {
+	public function get_attachment_image( $id, $size = array( 90, 90 ) ) {
 
 		$image_src = wp_get_attachment_image_src( $id, $size );
-		if( !$image_src )
+		if ( ! $image_src ) {
 			return false;
+		}
 
-		if( $image_src[1] == $size[0] && $image_src[2] == $size[1] ){
-			return $image_src[0];
+		if ( $image_src[ 1 ] == $size[ 0 ] && $image_src[ 2 ] == $size[ 1 ] ) {
+			return $image_src[ 0 ];
 		}
 
 		$image = get_post( $id );
 
-		if ( ! $image || 'attachment' != $image->post_type || 'image/' != substr( $image->post_mime_type, 0, 6 ) )
+		if ( ! $image || 'attachment' != $image->post_type || 'image/' != substr( $image->post_mime_type, 0, 6 ) ) {
 			return false;
+		}
 
 		$fullsizepath = get_attached_file( $image->ID );
 
-		if ( false === $fullsizepath || ! file_exists( $fullsizepath ) )
+		if ( false === $fullsizepath || ! file_exists( $fullsizepath ) ) {
 			return false;
+		}
 
 		@set_time_limit( 900 ); // 5 minutes per image should be PLENTY
-		include_once ABSPATH. '/wp-admin/includes/image.php';
+		include_once ABSPATH . '/wp-admin/includes/image.php';
 
 		$metadata = wp_generate_attachment_metadata( $image->ID, $fullsizepath );
 
-		if ( is_wp_error( $metadata ) )
+		if ( is_wp_error( $metadata ) ) {
 			return false;
-		if ( empty( $metadata ) )
+		}
+		if ( empty( $metadata ) ) {
 			return false;
+		}
 
 		// If this fails, then it just means that nothing was changed (old value == new value)
 		wp_update_attachment_metadata( $image->ID, $metadata );
 
 		$image_src = wp_get_attachment_image_src( $id, $size );
-		if( $image_src ){
-			return $image_src[0];
-		}
-		else{
+		if ( $image_src ) {
+			return $image_src[ 0 ];
+		} else {
 			return false;
 		}
 	}
@@ -711,14 +768,13 @@ class U_Next_Story {
 	 * Add arrow navigation to footer
 	 * @access  public
 	 */
-	public function display_arrow_navigation()
-	{
-		$post_types = get_option('u_next_story_post_types', []);
-		$menu       = get_option('u_next_story_menu', '');
-		$effects    = get_option('u_next_story_effects_navigation', 'slide');
+	public function display_arrow_navigation() {
+		$post_types = get_option( 'u_next_story_post_types', [] );
+		$menu       = get_option( 'u_next_story_menu', '' );
+		$effects    = get_option( 'u_next_story_effects_navigation', 'slide' );
 
-		$this->get_template('arrow_icons.php');
-		$this->get_template($effects . '.php');
+		$this->get_template( 'arrow_icons.php' );
+		$this->get_template( $effects . '.php' );
 	}
 
 	function get_template( $template_name, $args = array(), $template_path = '', $default_path = '' ) {
@@ -730,6 +786,7 @@ class U_Next_Story {
 
 		if ( ! file_exists( $located ) ) {
 			_doing_it_wrong( __FUNCTION__, sprintf( '<code>%s</code> does not exist.', $located ), '1.0.0' );
+
 			return;
 		}
 
@@ -774,7 +831,7 @@ class U_Next_Story {
 	 * @return string
 	 */
 	public function plugin_path() {
-		return untrailingslashit( plugin_dir_path(plugin_dir_path( __FILE__ )) );
+		return untrailingslashit( plugin_dir_path( plugin_dir_path( __FILE__ ) ) );
 	}
 
 	/**
@@ -792,13 +849,14 @@ class U_Next_Story {
 	 *
 	 * @since 1.0.0
 	 * @static
-	 * @see U_Next_Story()
+	 * @see   U_Next_Story()
 	 * @return Main U_Next_Story instance
 	 */
-	public static function instance ( $file = '', $version = '1.0.0' ) {
+	public static function instance( $file = '', $version = '1.0.0' ) {
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self( $file, $version );
 		}
+
 		return self::$_instance;
 	} // End instance ()
 
@@ -807,7 +865,7 @@ class U_Next_Story {
 	 *
 	 * @since 1.0.0
 	 */
-	public function __clone () {
+	public function __clone() {
 		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?' ), $this->_version );
 	} // End __clone ()
 
@@ -816,7 +874,7 @@ class U_Next_Story {
 	 *
 	 * @since 1.0.0
 	 */
-	public function __wakeup () {
+	public function __wakeup() {
 		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?' ), $this->_version );
 	} // End __wakeup ()
 
@@ -826,7 +884,7 @@ class U_Next_Story {
 	 * @since   1.0.0
 	 * @return  void
 	 */
-	public function install () {
+	public function install() {
 		$this->_log_version_number();
 	} // End install ()
 
@@ -836,7 +894,7 @@ class U_Next_Story {
 	 * @since   1.0.0
 	 * @return  void
 	 */
-	private function _log_version_number () {
+	private function _log_version_number() {
 		update_option( $this->_token . '_version', $this->_version );
 	} // End _log_version_number ()
 
