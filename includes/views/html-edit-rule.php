@@ -28,7 +28,10 @@ $sections = U_Next_Story()->settings->settings[ 'general']['sections'];
                 }
                 ?></h3>
                 <div id="<?php echo $sid; ?>-options" <?php echo $sid == 'styles' && false ? 'style="dispay:none;"' : ''; ?> >
-                <?php foreach ($section['fields'] as $field ){ ?>
+                <?php foreach ($section['fields'] as $field ){
+
+	                $field['value'] = $the_rule->{$field['id']};
+                    ?>
                     <div class="form-field">
                         <label for="<?php echo $field['id']; ?>"><?php echo $field['label']; ?></label>
                         <?php U_Next_Story()->admin->display_field($field); ?>

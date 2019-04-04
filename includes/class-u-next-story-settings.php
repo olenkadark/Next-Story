@@ -115,7 +115,7 @@ class U_Next_Story_Settings {
 		if( $nav_menus && is_array($nav_menus)){
 			$menus['location'] = array('label' => __( 'Theme Location', 'u-next-story' ), 'options' => $nav_menus);
 		}
-		//var_dump();
+
 		$_menus = wp_get_nav_menus();
 		if( $_menus ){
 			$menus['menus'] = array('label' => __( 'Menu', 'u-next-story' ), 'options' => array());
@@ -164,11 +164,11 @@ class U_Next_Story_Settings {
                             'description'	=> __( 'Choose post types where need display arrow navigation.', 'u-next-story' ),
                             'type'			=> 'select_multi',
                             'options'		=> $post_types,
-                            'default'		=> array( 'post' )
+                            'default'		=> []
                         ),
                         array(
                             'id' 			=> 'menu',
-                            'label'			=> __( 'Menu', 'u-next-story' ),
+                            'label'			=> __( 'or Menu', 'u-next-story' ),
                             'description'	=> __( 'Choose menu for displaying arrow navigation.', 'u-next-story' ),
                             'type'			=> 'select',
                             'options'		=> $menus,
@@ -198,7 +198,7 @@ class U_Next_Story_Settings {
                 ],
                 'exclude' => [
                     'id'                    => 'exclude',
-                    'title'					=> __( 'Exclude', 'u-next-story' ),
+                    'title'					=> __( 'Exclude', 'u-next-story' ) . ' (<small>applicable only for post types</small>)',
                     'fields'				=> $exclude
                 ],
                 'styles' => [

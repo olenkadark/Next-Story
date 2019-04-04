@@ -16,23 +16,23 @@ class U_Next_Story_Admin_API {
 	 * @param  boolean $echo  Whether to echo the field HTML or return it
 	 * @return void
 	 */
-	public function display_field ( $data = array(), $post = false, $echo = true ) {
+	public function display_field ( $args = array(), $post = false, $echo = true ) {
 
 		// Get field info
-		if ( isset( $data['field'] ) ) {
-			$field = $data['field'];
+		if ( isset( $args['field'] ) ) {
+			$field = $args['field'];
 		} else {
-			$field = $data;
+			$field = $args;
 		}
 
 		// Check for prefix on option name
 		$field_name  = '';
 		$option_name = '';
-		if ( isset( $data['prefix'] ) ) {
-			$option_name = $data['prefix'];
+		if ( isset( $args['prefix'] ) ) {
+			$option_name = $args['prefix'];
 		}
-        if ( isset( $data['name'] ) ) {
-            $field_name .= $data['name'];
+        if ( isset( $args['name'] ) ) {
+            $field_name .= $args['name'];
         }else{
             $field_name = $option_name . $field['id'];
         }
@@ -69,6 +69,10 @@ class U_Next_Story_Admin_API {
 		} elseif ( $data === false ) {
 			$data = '';
 		}
+
+		if( isset($field['value']) ){
+			$data = $field['value'];
+        }
 
 		$html = '';
 

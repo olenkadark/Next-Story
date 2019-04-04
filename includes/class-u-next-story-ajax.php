@@ -75,6 +75,13 @@ class U_Next_Story_AJAX {
         $rules    = get_option(U_Next_Story()->settings->base . 'rules', []);
 
         $rule     = $_REQUEST;
+
+        if( !isset($rule['post_types'])){
+	        $rule['post_types'] = [];
+        }
+	    if( !isset($rule['exclude'])){
+		    $rule['exclude'] = [];
+	    }
         unset($rule['rule_id']);
         unset($rule['security']);
         unset($rule['action']);

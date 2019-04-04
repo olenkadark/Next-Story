@@ -115,8 +115,13 @@ class U_Next_Story {
 		add_action( 'init', array( $this, 'load_localisation' ), 0 );
 
 		// Add arrow navigation to footer
-		add_filter( 'previous_post_link', array( $this, 'parse_post_link' ), 150, 5 );
-		add_filter( 'next_post_link', array( $this, 'parse_post_link' ), 150, 5 );
+		add_filter( 'previous_post_link', array( $this, 'parse_post_link' ), 999, 5 );
+		add_filter( 'next_post_link', array( $this, 'parse_post_link' ), 999, 5 );
+
+		add_filter( 'get_previous_post_excluded_terms', array( $this, 'post_excluded_terms' ), 999, 5 );
+		add_filter( 'get_next_post_excluded_terms', array( $this, 'post_excluded_terms' ), 999, 5 );
+
+
 		add_action( 'wp_footer', array( $this, 'display_arrow_navigation' ) );
 	} // End __construct ()
 
@@ -131,7 +136,7 @@ class U_Next_Story {
 		wp_register_style( $this->_token . '-frontend', esc_url( $this->assets_url ) . 'css/frontend.css', array(), $this->_version );
 		wp_enqueue_style( $this->_token . '-frontend' );
 
-		$post_types = get_option('u_next_story_post_types', array('post'));
+		$post_types = get_option('u_next_story_post_types', []);
 
 		$bg_color   = get_option( 'u_next_story_background_color', '#ffffff' );
 		$tx_color   = get_option( 'u_next_story_text_color', '#34495e' );
@@ -355,6 +360,43 @@ class U_Next_Story {
 	}
 
 	/**
+	 * Check if post is in a menu
+	 *
+	 * @param $menu menu name, id, or slug
+	 * @param $object_id int post object id of page
+	 * @return bool true if object is in menu
+	 */
+	public function object_is_in_menu( $menu = null, $object_id = null ) {
+
+		// get menu object
+		$menu_object = wp_get_nav_menu_items( esc_attr( $menu ) );
+
+		// stop if there isn't a menu
+		if( ! $menu_object )
+			return false;
+
+		// get the object_id field out of the menu object
+		$menu_items = wp_list_pluck( $menu_object, 'object_id' );
+
+		// use the current post if object_id is not specified
+		if( !$object_id ) {
+			global $post;
+			$object_id = get_queried_object_id();
+		}
+
+		// test if the specified page is in the menu or not. return true or false.
+		return in_array( (int) $object_id, $menu_items );
+
+	}
+
+	/**
+	 * @return array
+	 */
+	public function get_rule_settings(){
+
+	}
+
+	/**
 	 * Filter the adjacent post link.
 	 *
 	 * The dynamic portion of the hook name, `$adjacent`, refers to the type
@@ -369,19 +411,69 @@ class U_Next_Story {
 	 */
 	public function parse_post_link( $output, $format, $link, $post, $adjacent )
 	{
-		$post_types = get_option('u_next_story_post_types', array('post'));
-		$menu       = get_option('u_next_story_menu', '');
 
-		if( $post_types && is_array($post_types) && is_singular( $post_types ) ){			
-		}else if( $menu && !empty($menu) ){			
-			$result = $this->get_adjacent_post_link($format, $link, $menu, $adjacent);
+		$settings = $this->get_rule_settings();
+
+		$post_types = get_option('u_next_story_post_types', []);
+		$menu       = get_option('u_next_story_menu', '');
+		$rules      = get_option(U_Next_Story()->settings->base . 'rules', []);
+
+
+		$loop_menu         = get_option('u_next_story_loop_menu', 'off');
+		$loop_menu         = $loop_menu == 'on' ? true : false;
+
+		$_p = get_post();
+		$settings = array(
+			'object_id' => $_p->ID,
+			'loop_menu' => $loop_menu,
+			'submenu'   => get_option('u_next_story_submenu', 'include'),
+			'exclude'   => get_option('u_next_story_exclude', 'include'),
+		);
+
+
+
+		$find = false;
+		foreach ($rules as $rule){
+			if( $find ) break;
+
+
+			if( isset($rule['post_types']) && !empty($rule['post_types']) && is_array($rule['post_types']) && is_singular( $rule['post_types'] ) ){
+				$post_types = $rule['post_types'];
+				$find = true;
+			}
+
+			if( isset($rule['menu']) && !empty($rule['menu'])  && !empty($rule['menu']) && $this->object_is_in_menu($rule['menu'], $settings['object_id']) ){
+				$menu = $rule['menu'];
+				$find = true;
+			}
+			if( $find ){
+				$loop_menu = isset($rule['loop_menu']);
+				$loop_menu = $loop_menu == 'on' ? true : false;
+
+				$settings['loop_menu'] = $loop_menu;
+				$settings['submenu']   = isset($rule['submenu']) ? $rule['submenu'] : 'include';
+				$settings['exclude']   = isset($rule['exclude']) ? $rule['exclude'] : [];
+			}
+		}
+
+
+		if( $post_types && is_array($post_types) && is_singular( $post_types ) ){
+
+		}else if( $menu && !empty($menu) ){
+
+			$result = $this->get_adjacent_menu_link($format, $link, $menu, $adjacent, $settings);
 			if( $result && is_array($result) ){
 				$output = $result[0];
-				$post   = $result[1];				
+				$post   = $result[1];
 			}else{
 				return;	
 			}
+
+
+		}else{
+			return;
 		}
+
 		if ( !$post ){
 			return;
 		}
@@ -456,10 +548,11 @@ class U_Next_Story {
 	 * @param string       $format         Link anchor format.
 	 * @param string       $link           Link permalink format.
 	 * @param array|string $post           Object of menu item.
-	 * @param bool         $adjacent       Optional. Whether to display link to previous or next post. Default next.
+	 * @param bool         $adjacent       Whether to display link to previous or next post. Default next.
+	 * @param array        $settings       Settings
 	 * @return string The link URL of the previous or next post in relation to the current menu item.
 	 */
-	public function get_adjacent_post_link($format, $link, $menu, $adjacent)
+	public function get_adjacent_menu_link($format, $link, $menu, $adjacent, $settings)
 	{
 		global $wp_query, $wp_rewrite;
 		if( !is_numeric($menu) ){
@@ -467,118 +560,89 @@ class U_Next_Story {
 			$menu = false;
 			$theme_locations = get_nav_menu_locations();
 			if( $theme_locations && isset($theme_locations[$location])){
-				$menu_obj = get_term( $theme_locations[$location], 'nav_menu' );				
+				$menu_obj = get_term( $theme_locations[$location], 'nav_menu' );
 				if($menu_obj){
 					$menu = $menu_obj->term_id;
 				}
 			}
 		}
+
 		if( !$menu || empty($menu) ){
-			return;
+			return false;
 		}
 		$previous = $adjacent == 'previous' ? true : false;
 
 		$output = '';
 
 		$menu_items        = (array) wp_get_nav_menu_items($menu);
-		$loop_menu         = get_option('u_next_story_loop_menu', 'off');
-		$loop_menu         = $loop_menu == 'on' ? true : false;
-		$submenu           = get_option('u_next_story_submenu', 'include');
+		$loop_menu         = $settings['loop_menu'];
+		$submenu           = $settings['submenu'];
+		$object_id         = $settings['object_id'];
 		$current_menu_item = null;
 
-		_wp_menu_item_classes_by_context( $menu_items );
 
-		$sorted_menu_items = $menu_items_with_children = array();
-		foreach ( (array) $menu_items as $menu_item ) {
-			$sorted_menu_items[ $menu_item->menu_order ] = $menu_item;
-			if ( $menu_item->menu_item_parent )
-				$menu_items_with_children[ $menu_item->menu_item_parent ] = true;
+		switch ($submenu){
+			case 'exclude':
+				foreach ( $menu_items as $key => $menu_item ) {
+					if(  absint($menu_item->menu_item_parent) > 0 ){
+						unset($menu_items[$key]);
+						continue;
+					}
+				}
+				break;
+			case 'only_submenu':
+				foreach ( $menu_items as $key => $menu_item ) {
+					if(  absint($menu_item->menu_item_parent) === 0 ){
+						unset($menu_items[$key]);
+						continue;
+					}
+				}
+				break;
 		}
 
-		// Add the menu-item-has-children class where applicable
-		if ( $menu_items_with_children ) {
-			foreach ( $sorted_menu_items as &$menu_item ) {
-				if ( isset( $menu_items_with_children[ $menu_item->ID ] ) )
-					$menu_item->classes[] = 'menu-item-has-children';
-			}
-		}
+		$menu_items = array_values($menu_items);
 
-		unset( $menu_items, $menu_item );
-
-		$menu_items = apply_filters( 'wp_nav_menu_objects', $sorted_menu_items, array() );
-		
-		$parent_ = 0;
 		foreach ( $menu_items as $key => $menu_item ) {
-			
-			if( isset($menu_item->classes) && is_array($menu_item->classes) && in_array('current-menu-item', $menu_item->classes)){
+			$menu_object_id = isset($menu_item->object_id) ? absint($menu_item->object_id) : 0;
+			if( $menu_object_id === $object_id ){
 				$current_menu_item = $key;
-				$parent_ = (int) $menu_item->menu_item_parent;
 				break;
 			}
 		}
-		if( is_null($current_menu_item) ){
-			return;
-		}
-		if( $parent_ == 0 && $submenu == 'only_submenu' ){
-			return;
-		}
-		$parents = array($parent_);
-		if( $parent_ > 0 && $submenu == 'only_submenu' ){
-			
-			$exit = false;
-			while (!$exit) {
-				foreach ( $menu_items as $key => $menu_item ) {
-					if( $menu_item->ID == $parent_ ){
-						$par = (int) $menu_item->menu_item_parent;
-						if( $par > 0 ){
-							$parents[] = $parent_  = $par;
-						}else{
-							$exit = true;
-						}
-						break;
-					}
-				}
-			}
-		}
-		
-		$post = false;
-		$i = $current_menu_item;
-		$d = -1;
-		$j = 0;
-		$count = count($menu_items);
-		while ( !$post && $d != $current_menu_item) {
-			
-			if( $adjacent == 'next' ){
-				$i++;
-				$j = 0;
-			}else if( $adjacent == 'previous' ){
-				$i--;
-				$j = $count;
-			}
-			if( $i > $count || $i < 0){
-				if( !$loop_menu ) break;
-				$i = $j;
-			}
-			$d = $i;
 
-			if(isset( $menu_items[$i] ) && strpos( $menu_items[$i]->url, '#' ) === false ){
-				$parent = (int) $menu_items[$i]->menu_item_parent;
-				if( $submenu == 'exclude' && $parent > 0){
-					continue;
-				}
-				if( $submenu == 'only_submenu' && ($parent == 0 || !in_array($parent, $parents)) ){
-					continue;
-				}
-				$post = $menu_items[$i];					
-			}
+		if( is_null($current_menu_item) ){
+			return false;
 		}
-		
+
+
+		$need_key = $current_menu_item + 1;
+		end($menu_items);         // move the internal pointer to the end of the array
+		$last_key = key($menu_items);
+		reset($menu_items);
+
+		switch ($adjacent){
+			case 'previous':
+				$need_key = $current_menu_item - 1;
+				if( $current_menu_item === 0 && $loop_menu ){
+					$need_key = $last_key;
+				}
+				break;
+			case 'next':
+				if( $current_menu_item === $last_key && $loop_menu ){
+					$need_key = 0;
+				}
+				break;
+		}
+
+		$post = isset( $menu_items[$need_key]) ? $menu_items[$need_key] : false;
+
 		if ( ! $post ) {
 			$output = '';
 		} else {
+//			var_dump($post);
 			$title = $post->title;
 
-			if ( empty( $post->title ) )
+			if ( empty( $title ) )
 				$title = $previous ? __( 'Previous Post' ) : __( 'Next Post' );
 
 
@@ -595,8 +659,10 @@ class U_Next_Story {
 				$post = get_post($post->object_id);
 			}
 		}
-		return array($output, $post); 
+
+		return array($output, $post);
 	}
+
 
 	// Process a single image ID (this is an AJAX handler)
 	public function get_attachment_image($id, $size = array(90, 90) ) {
@@ -647,17 +713,9 @@ class U_Next_Story {
 	 */
 	public function display_arrow_navigation()
 	{
-		$post_types = get_option('u_next_story_post_types', array('post'));
+		$post_types = get_option('u_next_story_post_types', []);
 		$menu       = get_option('u_next_story_menu', '');
 		$effects    = get_option('u_next_story_effects_navigation', 'slide');
-				
-		/*if( $post_types && is_array($post_types) && is_singular( $post_types ) ){
-
-			$this->get_template('arrow_icons.php');
-			$this->get_template($effects . '.php');
-			
-		}elseif( $menu && !empty($menu) ){
-		}*/
 
 		$this->get_template('arrow_icons.php');
 		$this->get_template($effects . '.php');

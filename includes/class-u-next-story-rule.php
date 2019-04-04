@@ -14,7 +14,7 @@ class U_Next_Story_Rule {
 
     public $title              = '';
     public $post_types         = [];
-    public $menu               = [];
+    public $menu               = '';
     public $submenu            = 'include';
     public $loop_menu          = 'off';
     public $exclude            = [];
