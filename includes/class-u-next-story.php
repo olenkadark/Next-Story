@@ -440,11 +440,11 @@ class U_Next_Story {
 			}
 		}
 		$exclude = [];
-		foreach ($settings[ 'exclude' ] as $ex ){
-			$exclude = array_merge($exclude, $ex);
+		foreach ( $settings[ 'exclude' ] as $ex ) {
+			$exclude = array_merge( $exclude, $ex );
 		}
 
-		$settings[ 'exclude' ] = array_map('absint', $exclude);
+		$settings[ 'exclude' ] = array_map( 'absint', $exclude );
 
 
 		return $settings;
@@ -471,11 +471,11 @@ class U_Next_Story {
 		$menu       = $settings[ 'menu' ];
 
 		if ( $post_types && is_array( $post_types ) && is_singular( $post_types ) ) {
-			$result = $this->get_adjacent_post_link($format, $link, $post_types, $adjacent, $settings);
-			if( $result && is_array($result) ){
-				$output = $result[0];
-				$post   = $result[1];
-			}else{
+			$result = $this->get_adjacent_post_link( $format, $link, $post_types, $adjacent, $settings );
+			if ( $result && is_array( $result ) ) {
+				$output = $result[ 0 ];
+				$post   = $result[ 1 ];
+			} else {
 				return;
 			}
 		} else if ( $menu && ! empty( $menu ) ) {
@@ -689,21 +689,26 @@ class U_Next_Story {
 	 * @return array The link URL of the previous or next post in relation to the current menu item.
 	 */
 	public function get_adjacent_post_link( $format, $link, $post_type, $adjacent, $settings ) {
-		$previous = $adjacent === 'previous';
+		$previous  = $adjacent === 'previous';
+		$object_id = $settings[ 'object_id' ];
+		$submenu   = $settings[ 'submenu' ];
 
-		if( $settings['exclude'] && !empty($settings['exclude']) && is_array($settings['exclude']) ){
-			$post = get_adjacent_post( false, $settings['exclude'], $previous );
-		}else{
-			$post = get_adjacent_post(false, '', $previous);
+
+		if ( $settings[ 'exclude' ] && ! empty( $settings[ 'exclude' ] ) && is_array( $settings[ 'exclude' ] ) ) {
+			$post = get_adjacent_post( false, $settings[ 'exclude' ], $previous );
+		} else {
+			$post = get_adjacent_post( false, '', $previous );
 		}
 
-		if ( empty( $post ) )
+		if ( empty( $post ) ) {
 			return;
+		}
 
-		$title    = get_the_title($post );
+		$title = get_the_title( $post );
 
-		if ( empty( $title ) )
+		if ( empty( $title ) ) {
 			$title = $previous ? __( 'Previous Post' ) : __( 'Next Post' );
+		}
 
 		$rel = $previous ? 'prev' : 'next';
 
