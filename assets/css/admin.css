@@ -1,3 +1,45 @@
+/*----General Styles---------*/
+.u--flex-container {
+    -ms-box-orient: horizontal;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -moz-flex;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.u--nowrap  {
+    -webkit-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+}
+
+.u--wrap    {
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.u--wrap-reverse         {
+    -webkit-flex-wrap: wrap-reverse;
+    flex-wrap: wrap-reverse;
+}
+.u--row{
+    display: grid;
+}
+
+.u--grid-2-col{
+    gap: 20px;
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+.u--grid-3-col{
+    gap: 20px;
+    display: grid;
+    grid-template-columns: 33.333% 33.333% 33.333%;
+}
+
+/*---Form----*/
+
 .form-table .checkbox_multi{display: block;}
 
 #u_next_story_settings #scroll_position_unit{
@@ -9,6 +51,17 @@
     display: block;}
 .tablenav.top #doaction, #doaction2, #post-query-submit {margin: 0px 4px 0 4px;}
 
+#u_next_story_rules_table .edit-rule{
+    background: #fff;
+}
+.edit-rule td{
+    border-top: 1px solid #dcdcde;
+    border-bottom: 1px solid #dcdcde;
+}
+.edit-rule .wp-picker-holder{
+    position: absolute;
+    z-index: 99;
+}
 .edit-rule h3{
     color: #333;
     margin: 1.33em 0 0;
@@ -19,14 +72,14 @@
     padding: 0;
     margin: 9px 0 0;
 }
-.edit-rule .form-field label {
+.edit-rule .form-field > label {
     display: block;
     padding: 0 0 3px;
 }
 .edit-rule .form-field label:first-child{
     font-weight: 600;
 }
-.edit-rule input[type=checkbox] + label{
+.edit-rule .form-field input + label{
     display: inline-block;
     font-weight: normal !important;
     margin-top: -6px;
@@ -70,26 +123,6 @@
     vertical-align: middle;
 }
 
-.edit-rule .column-row {
-    width: 31.1%;
-    padding: 0 2% 0 0;
-    float: left;
-}
-
-#styles-options{
-    display: none;
-}
-
-@media only screen and (max-width: 1280px){
-    .edit-rule .column-row {
-        width: 48%;
-    }
-}
-@media only screen and (max-width: 1280px){
-    .edit-rule .column-row:first-child {
-        width: 100%;
-    }
-}
 
 #u_next_story_rules_table .column-actions button {
     margin-left: 4px;

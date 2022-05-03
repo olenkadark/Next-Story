@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var array $rules
+ */
+?>
 <table class="wp-list-table widefat fixed striped" id="u_next_story_rules_table">
     <thead>
         <tr>
@@ -27,8 +32,11 @@
         </tr>
     </thead>
     <tbody>
+        <tr class="no-items" <?php echo $rules && is_array($rules) ? 'style="display: none;"' : ''; ?>>
+            <td colspan="8"><?php _e('No Rules'); ?></td>
+        </tr>
         <?php
-        if($rules && !empty($rules) && is_array($rules)): ?>
+        if( $rules && is_array($rules)): ?>
             <?php
             foreach($rules as $rule_id => $rule) {
                 $the_rule = new U_Next_Story_Rule($rule);
@@ -36,10 +44,6 @@
             }
             ?>
         <?php endif; ?>
-
-        <tr class="no-items" <?php echo $rules && !empty($rules) && is_array($rules) ? 'style="display: none;"' : ''; ?>>
-            <td colspan="8"><?php _e('No Rules'); ?></td>
-        </tr>
     </tbody>
 </table>
 <p class="submit">

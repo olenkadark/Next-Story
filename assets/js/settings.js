@@ -9,6 +9,8 @@ jQuery(document).ready(function($) {
     /***** Select2 *****/
     $( document ).on( "u_init_select", function() {
         $( 'select.u-init-select:not(.u-inited)' ).select2().addClass('u-inited');
+        $('#post_types').trigger('change');
+
     })
         .on('change', '#apply_styles', function (e) {
             if( $(this).is(':checked') ){
@@ -16,6 +18,16 @@ jQuery(document).ready(function($) {
             }else{
                 $('#styles-options').hide();
             }
+        })
+        .on('change', '#post_types', function (e) {
+            $('.post_type_taxonomy').prop( "disabled", true );
+            let post_types = $(this).val();
+            if( post_types.length ){
+                $.each(post_types, function (key,el){
+                    $('.show_on_post_type_' + el).prop( "disabled", false );
+                });
+            }
+            console.log(post_types);
         })
          .on('click', '#add_new_rule', function (e) {
              $wrapper.block();

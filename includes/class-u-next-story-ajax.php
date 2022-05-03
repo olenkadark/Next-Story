@@ -76,12 +76,6 @@ class U_Next_Story_AJAX {
 
         $rule     = $_REQUEST;
 
-        if( !isset($rule['post_types'])){
-	        $rule['post_types'] = [];
-        }
-	    if( !isset($rule['exclude'])){
-		    $rule['exclude'] = [];
-	    }
         unset($rule['rule_id']);
         unset($rule['security']);
         unset($rule['action']);
@@ -89,6 +83,7 @@ class U_Next_Story_AJAX {
         $rules[$rule_id] = $rule;
 
 	    update_option(U_Next_Story()->settings->base . 'rules', $rules, true);
+	    do_action( U_Next_Story()->settings->base . 'clean_cache');
 
         $the_rule = new U_Next_Story_Rule($rule);
         $i = count($rules);
@@ -108,7 +103,7 @@ class U_Next_Story_AJAX {
         }
 
 	    update_option(U_Next_Story()->settings->base . 'rules', $rules, true);
-
+	    do_action( U_Next_Story()->settings->base . 'clean_cache');
 	    $return = array(
 		    'message'  => 'OK'
 	    );
@@ -116,8 +111,6 @@ class U_Next_Story_AJAX {
 	    wp_send_json($return);
     }
 
-
-	
 }
 
 U_Next_Story_AJAX::init();

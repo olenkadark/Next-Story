@@ -113,7 +113,7 @@ nav.u_next_story a svg {
 }
 
 .u_next_story.nav-slide > div:hover div {
-	-webkit-transform: translateY(-50%) translateX(0); 
+	-webkit-transform: translateY(-50%) translateX(0);
 	transform: translateY(-50%) translateX(0);
 }
 
@@ -836,12 +836,12 @@ nav.u_next_story a svg {
 
 .u_next_story.nav-multithumb .prev a div::after {
 	content: 'Previous';
-} 
+}
 
 .u_next_story.nav-multithumb .next a div::after {
 	content: 'Next';
 	text-align: right;
-} 
+}
 
 .u_next_story.nav-multithumb .prev a div {
 	left: 40px;
@@ -1003,6 +1003,7 @@ nav.u_next_story a svg {
 
 .u_next_story.nav-fillpath .prev a h3 {
 	left: 100%;
+	width: fit-content;
 	-webkit-transform: translateY(-50%) translateX(-50%);
 	transform: translateY(-50%) translateX(-50%);
 }
@@ -1010,6 +1011,7 @@ nav.u_next_story a svg {
 .u_next_story.nav-fillpath .next a h3 {
 	right: 100%;
 	text-align: right;
+	width: fit-content;''
 	-webkit-transform: translateY(-50%) translateX(50%);
 	transform: translateY(-50%) translateX(50%);
 }

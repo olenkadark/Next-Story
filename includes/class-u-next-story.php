@@ -397,57 +397,59 @@ class U_Next_Story {
 	/**
 	 * @return array
 	 */
-	public function get_rule_settings() {
+	public function get_rule_settings(): array {
+		$settings = wp_cache_get( 'rule_settings',  $this->_token);
+		if( !$settings) {
+			$loop_menu = get_option( 'u_next_story_loop_menu', 'off' );
+			$loop_menu = $loop_menu === 'on' ? true : false;
 
-		$loop_menu = get_option( 'u_next_story_loop_menu', 'off' );
-		$loop_menu = $loop_menu == 'on' ? true : false;
+			$_p       = get_post();
+			$settings = [
+				'object_id'  => $_p->ID,
+				'post_types' => get_option( 'u_next_story_post_types', [] ),
+				'menu'       => get_option( 'u_next_story_menu', '' ),
+				'loop_menu'  => $loop_menu,
+				'submenu'    => get_option( 'u_next_story_submenu', 'include' ),
+				'exclude'    => get_option( 'u_next_story_exclude', [] ),
+			];
 
-		$_p       = get_post();
-		$settings = [
-			'object_id'  => $_p->ID,
-			'post_types' => get_option( 'u_next_story_post_types', [] ),
-			'menu'       => get_option( 'u_next_story_menu', '' ),
-			'loop_menu'  => $loop_menu,
-			'submenu'    => get_option( 'u_next_story_submenu', 'include' ),
-			'exclude'    => get_option( 'u_next_story_exclude', 'include' ),
-		];
+			$rules = get_option( U_Next_Story()->settings->base . 'rules', [] );
+			$find  = false;
+			foreach ( $rules as $rule ) {
+				if ( $find ) {
+					break;
+				}
 
-		$rules = get_option( U_Next_Story()->settings->base . 'rules', [] );
+				if ( isset( $rule['post_types'] ) && ! empty( $rule['post_types'] ) && is_array( $rule['post_types'] ) && is_singular( $rule['post_types'] ) ) {
+					$settings['post_types'] = $rule['post_types'];
+					$find                   = true;
+				}
 
-		$find = false;
-		foreach ( $rules as $rule ) {
-			if ( $find ) {
-				break;
+				if ( isset( $rule['menu'] ) && ! empty( $rule['menu'] ) && ! empty( $rule['menu'] ) && $this->object_is_in_menu( $rule['menu'],
+						$settings['object_id'] ) ) {
+					$settings['menu'] = $rule['menu'];
+					$find             = true;
+				}
+
+				if ( $find ) {
+					$loop_menu = isset( $rule['loop_menu'] );
+					$loop_menu = $loop_menu == 'on' ? true : false;
+
+					$settings['loop_menu'] = $loop_menu;
+					$settings['submenu']   = isset( $rule['submenu'] ) ? $rule['submenu'] : 'include';
+					$settings['exclude']   = isset( $rule['exclude'] ) ? $rule['exclude'] : [];
+				}
 			}
-
-			if ( isset( $rule[ 'post_types' ] ) && ! empty( $rule[ 'post_types' ] ) && is_array( $rule[ 'post_types' ] ) && is_singular( $rule[ 'post_types' ] ) ) {
-				$settings[ 'post_types' ] = $rule[ 'post_types' ];
-				$find                     = true;
+			$exclude = [];
+			if ( $settings['exclude'] ) {
+				foreach ( $settings['exclude'] as $ex ) {
+					$exclude = array_merge( $exclude, $ex );
+				}
 			}
-
-			if ( isset( $rule[ 'menu' ] ) && ! empty( $rule[ 'menu' ] ) && ! empty( $rule[ 'menu' ] ) && $this->object_is_in_menu( $rule[ 'menu' ], $settings[ 'object_id' ] ) ) {
-				$settings[ 'menu' ] = $rule[ 'menu' ];
-				$find               = true;
-			}
-
-			if ( $find ) {
-				$loop_menu = isset( $rule[ 'loop_menu' ] );
-				$loop_menu = $loop_menu == 'on' ? true : false;
-
-				$settings[ 'loop_menu' ] = $loop_menu;
-				$settings[ 'submenu' ]   = isset( $rule[ 'submenu' ] ) ? $rule[ 'submenu' ] : 'include';
-				$settings[ 'exclude' ]   = isset( $rule[ 'exclude' ] ) ? $rule[ 'exclude' ] : [];
-			}
+			$settings['exclude'] = array_map( 'absint', $exclude );
+			wp_cache_set( 'rule_settings', $settings,  $this->_token);
 		}
-		$exclude = [];
-		foreach ( $settings[ 'exclude' ] as $ex ) {
-			$exclude = array_merge( $exclude, $ex );
-		}
-
-		$settings[ 'exclude' ] = array_map( 'absint', $exclude );
-
-
-		return $settings;
+		return apply_filters( $this->_token . '_rule_settings', $settings );
 	}
 
 	/**
@@ -478,7 +480,7 @@ class U_Next_Story {
 			} else {
 				return;
 			}
-		} else if ( $menu && ! empty( $menu ) ) {
+		} else if ( ! empty( $menu ) ) {
 
 			$result = $this->get_adjacent_menu_link( $format, $link, $menu, $adjacent, $settings );
 			if ( $result && is_array( $result ) ) {
@@ -855,7 +857,7 @@ class U_Next_Story {
 	 * @since 1.0.0
 	 * @static
 	 * @see   U_Next_Story()
-	 * @return Main U_Next_Story instance
+	 * @return U_Next_Story instance
 	 */
 	public static function instance( $file = '', $version = '1.0.0' ) {
 		if ( is_null( self::$_instance ) ) {

@@ -1,35 +1,40 @@
-(function($) {
-  'use strict';
+(function ($) {
+    'use strict';
 
-  $(function() {
-    var frontapp = {
-      scroll_position : parseInt(ucat_ns.scroll_position),
-      scroll_unit     : ucat_ns.scroll_position_unit,
-      init: function () {
-        if( frontapp.scroll_position > 0 ){
-          frontapp.showOnScroll();
-          $(window).scroll(frontapp.showOnScroll);
-        }
-      },
-      showOnScroll : function () {
-        var position  = frontapp.scroll_position;
-        var scrollTop = $(window).scrollTop();
+    $(function () {
+        var frontapp = {
+            scroll_position: parseInt(ucat_ns.scroll_position),
+            scroll_unit: ucat_ns.scroll_position_unit,
+            window_height: $(window).height(),
+            init: function () {
+                if (frontapp.scroll_position > 0) {
+                    frontapp.showOnScroll();
+                    $(window).on('scroll', frontapp.showOnScroll);
+                    $(window).on('resize', frontapp.onResize);
+                }
+            },
+            onResize: function (){
+                frontapp.window_height = $(window).height();
+            },
+            showOnScroll: function () {
+                let scrollTop = $(window).scrollTop();
 
-        if( frontapp.scroll_unit === '%') {
-          var documentHeight    = $(document).height();
-          scrollTop = ( scrollTop / documentHeight ) * 100;
-        }
+                if (frontapp.scroll_unit === '%') {
+                    const documentHeight = $(document).height();
+                    const halfWindowHeight = frontapp.window_height/2;
+                    scrollTop = ( (scrollTop + halfWindowHeight) / documentHeight) * 100;
+                }
 
-        if( scrollTop > position) {
-          $('nav.u_next_story').show();
-        } else {
-          $('nav.u_next_story').hide();
-        }
-      }
-    };
+                if (scrollTop > frontapp.scroll_position) {
+                    $('nav.u_next_story').show();
+                } else {
+                    $('nav.u_next_story').hide();
+                }
+            }
+        };
 
-    frontapp.init();
+        frontapp.init();
 
-  });
+    });
 
 }(jQuery));

@@ -7,7 +7,7 @@ class U_Next_Story_Admin_API {
 	/**
 	 * Constructor function
 	 */
-	public function __construct () {		
+	public function __construct () {
 	}
 
 	/**
@@ -24,25 +24,22 @@ class U_Next_Story_Admin_API {
 		} else {
 			$field = $args;
 		}
+		$class = $field['class'] ?? [];
+		$class = !is_array($class) ? [$class] : $class;
 
 		// Check for prefix on option name
-		$field_name  = '';
-		$option_name = '';
-		if ( isset( $args['prefix'] ) ) {
-			$option_name = $args['prefix'];
-		}
-        if ( isset( $args['name'] ) ) {
-            $field_name .= $args['name'];
-        }else{
-            $field_name = $option_name . $field['id'];
-        }
+		$field_name  = $option_name = $args['prefix'] ?? '';
 
+		if ( isset( $field['name'] ) ) {
+            $field_name .= $field['name'];
+        }else{
+            $field_name .= $field['id'];
+        }
 		// Get saved data
 		$data = '';
 		if ( $post ) {
 
 			// Get saved field data
-			$option_name .= $field['id'];
 			$option = get_post_meta( $post->ID, $field['id'], true );
 
 			// Get data to display in field
@@ -53,9 +50,9 @@ class U_Next_Story_Admin_API {
 		} else {
 
 			// Get saved option
-			$option_name .= $field['id'];
-			$option = get_option( $option_name );
+			$option_name .= $field['option_name'] ?? $field['id'];
 
+			$option = get_option( $option_name );
 			// Get data to display in field
 			if ( isset( $option ) ) {
 				$data = $option;
@@ -73,18 +70,21 @@ class U_Next_Story_Admin_API {
 		if( isset($field['value']) ){
 			$data = $field['value'];
         }
-
 		$html = '';
 
         $field['placeholder'] = isset($field['placeholder']) ? $field['placeholder'] : '';
-
 
 		switch( $field['type'] ) {
 
 			case 'text':
 			case 'url':
 			case 'email':
-				$html .= '<input id="' . esc_attr( $field['id'] ) . '" type="text" name="' . esc_attr( $field_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $data ) . '" />' . "\n";
+				$html .= '<input type="text"
+				                id="' . esc_attr( $field['id'] ) . '"				                 
+				                name="' . esc_attr( $field_name ) . '" 
+				                placeholder="' . esc_attr( $field['placeholder'] ) . '" 
+				                value="' . esc_attr( $data ) . '" 
+				                class="' . esc_attr( implode(' ', $class) ) . '" />' . "\n";
 			break;
 
 			case 'password':
@@ -99,15 +99,28 @@ class U_Next_Story_Admin_API {
 				if ( isset( $field['max'] ) ) {
 					$max = ' max="' . esc_attr( $field['max'] ) . '"';
 				}
-				$html .= '<input id="' . esc_attr( $field['id'] ) . '" type="' . esc_attr( $field['type'] ) . '" name="' . esc_attr( $field_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="' . esc_attr( $data ) . '"' . $min . '' . $max . '/>' . "\n";
+				$html .= '<input id="' . esc_attr( $field['id'] ) . '" 
+                                type="' . esc_attr( $field['type'] ) . '" 
+                                name="' . esc_attr( $field_name ) . '" 
+                                placeholder="' . esc_attr( $field['placeholder'] ) . '" 
+                                class="' . esc_attr( implode(' ', $class) ) . '"
+                                value="' . esc_attr( $data ) . '"' . $min . '' . $max . '/>' . "\n";
 			break;
 
 			case 'text_secret':
-				$html .= '<input id="' . esc_attr( $field['id'] ) . '" type="text" name="' . esc_attr( $field_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" value="" />' . "\n";
+				$html .= '<input type="text" 
+				                id="' . esc_attr( $field['id'] ) . '" 
+				                name="' . esc_attr( $field_name ) . '" 
+				                placeholder="' . esc_attr( $field['placeholder'] ) . '"
+				                class="' . esc_attr( implode(' ', $class) ) . '" 
+				                value="" />' . "\n";
 			break;
 
 			case 'textarea':
-				$html .= '<textarea id="' . esc_attr( $field['id'] ) . '" rows="5" cols="50" name="' . esc_attr( $field_name ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '">' . $data . '</textarea><br/>'. "\n";
+				$html .= '<textarea id="' . esc_attr( $field['id'] ) . '" rows="5" cols="50" 
+				                    name="' . esc_attr( $field_name ) . '" 
+				                    class="' . esc_attr( implode(' ', $class) ) . '"
+				                    placeholder="' . esc_attr( $field['placeholder'] ) . '">' . $data . '</textarea><br/>'. "\n";
 			break;
 
 			case 'checkbox':
@@ -115,7 +128,10 @@ class U_Next_Story_Admin_API {
 				if ( $data && 'on' == $data ) {
 					$checked = 'checked="checked"';
 				}
-				$html .= '<input id="' . esc_attr( $field['id'] ) . '" type="' . esc_attr( $field['type'] ) . '" name="' . esc_attr( $field_name ) . '" ' . $checked . '/>' . "\n";
+				$html .= '<input id="' . esc_attr( $field['id'] ) . '" 
+				                type="' . esc_attr( $field['type'] ) . '"
+				                class="' . esc_attr( implode(' ', $class) ) . '" 
+				                name="' . esc_attr( $field_name ) . '" ' . $checked . '/>' . "\n";
 			break;
 
 			case 'checkbox_multi':
@@ -139,7 +155,9 @@ class U_Next_Story_Admin_API {
 			break;
 
 			case 'select':
-				$html .= '<select name="' . esc_attr( $field_name ) . '" id="' . esc_attr( $field['id'] ) . '">';
+				$html .= '<select name="' . esc_attr( $field_name ) . '" 
+                                id="' . esc_attr( $field['id'] ) . '" 
+                                class="' . esc_attr( implode(' ', $class) ) . '">';
 				foreach ( $field['options'] as $k => $v ) {
 					if( is_array($v) ){
 						$label = isset($v['label']) ? $v['label'] : '';
@@ -165,7 +183,11 @@ class U_Next_Story_Admin_API {
 
 			case 'select_multi':
                 $data = is_array($data) ? $data : [];
-				$html .= '<select name="' . esc_attr( $field_name ) . '[]" id="' . esc_attr( $field['id'] ) . '" multiple="multiple" class="u-init-select">';
+				$class[] = 'u-init-select';
+				$html .= '<select name="' . esc_attr( $field_name ) . '[]" 
+				                id="' . esc_attr( $field['id'] ) . '"
+				                 multiple="multiple" 
+				                 class="' . esc_attr( implode(' ', $class) ) . '">';
 				foreach ( $field['options'] as $k => $v ) {
 					$selected = false;
 					if ( in_array( $k, $data ) ) {
@@ -210,7 +232,7 @@ class U_Next_Story_Admin_API {
 					$html .= '<label for="' . esc_attr( $field['id'] ) . '">' . "\n";
 				}
 				if( isset($field['description']) ){
-					$html .= '<span class="description">' . $field['description'] . '</span>' . "\n";					
+					$html .= '<span class="description">' . $field['description'] . '</span>' . "\n";
 				}
 
 
