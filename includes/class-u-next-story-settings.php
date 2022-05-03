@@ -245,7 +245,6 @@ class U_Next_Story_Settings {
 					'menu'         => [
 						'id'          => 'menu',
 						'title'       => __( 'Menu', 'u-next-story' ),
-						'description' => __( 'Secondary priority rule', 'u-next-story' ),
 						'fields'      => [
 							'menu'      => array(
 								'id'          => 'menu',
@@ -364,7 +363,7 @@ class U_Next_Story_Settings {
 
 
 			$settings['rules'] = array(
-				'title'    => __( 'Additional Rules', 'u-next-story' ),
+				'title'    => __( 'Rules', 'u-next-story' ),
 				'callback' => array( $this, 'rules_section' )
 			);
 			wp_cache_set( 'settings_fields', $settings,  $this->parent->_token);
