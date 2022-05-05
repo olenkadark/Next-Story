@@ -2,21 +2,17 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class U_Next_Story_Admin_API {
-
-	/**
-	 * Constructor function
-	 */
-	public function __construct () {
-	}
-
+class U_Next_Story_Admin_Api {
 	/**
 	 * Generate HTML for displaying fields
-	 * @param  array   $field Field data
-	 * @param  boolean $echo  Whether to echo the field HTML or return it
-	 * @return void
+	 *
+	 * @param  array  $args
+	 * @param  WP_Post|bool  $post
+	 * @param  boolean  $echo  Whether to echo the field HTML or return it
+	 *
+	 * @return string|void
 	 */
-	public function display_field ( $args = array(), $post = false, $echo = true ) {
+	public static function display_field ( $args = array(), $post = false, $echo = true ) {
 
 		// Get field info
 		if ( isset( $args['field'] ) ) {
@@ -36,42 +32,40 @@ class U_Next_Story_Admin_API {
             $field_name .= $field['id'];
         }
 		// Get saved data
-		$data = '';
-		if ( $post ) {
-
-			// Get saved field data
-			$option = get_post_meta( $post->ID, $field['id'], true );
-
-			// Get data to display in field
-			if ( isset( $option ) ) {
-				$data = $option;
-			}
-
-		} else {
-
-			// Get saved option
-			$option_name .= $field['option_name'] ?? $field['id'];
-
-			$option = get_option( $option_name );
-			// Get data to display in field
-			if ( isset( $option ) ) {
-				$data = $option;
-			}
-
-		}
-
-		// Show default data if no option saved and default is supplied
-		if ( $data === false && isset( $field['default'] ) ) {
-			$data = $field['default'];
-		} elseif ( $data === false ) {
-			$data = '';
-		}
-
 		if( isset($field['value']) ){
 			$data = $field['value'];
+		}else{
+			$data = '';
+			if ( $post ) {
+				// Get saved field data
+				$option = get_post_meta( $post->ID, $field['id'], true );
+
+				// Get data to display in field
+				if ( isset( $option ) ) {
+					$data = $option;
+				}
+
+			} else {
+
+				// Get saved option
+				$option_name .= $field['option_name'] ?? $field['id'];
+
+				$option = get_option( $option_name );
+				// Get data to display in field
+				if ( isset( $option ) ) {
+					$data = $option;
+				}
+
+			}
+
+			// Show default data if no option saved and default is supplied
+			if ( $data === false && isset( $field['default'] ) ) {
+				$data = $field['default'];
+			} elseif ( $data === false ) {
+				$data = '';
+			}
         }
 		$html = '';
-
         $field['placeholder'] = isset($field['placeholder']) ? $field['placeholder'] : '';
 
 		switch( $field['type'] ) {
@@ -256,7 +250,7 @@ class U_Next_Story_Admin_API {
 	 * @param  string $type Type of field to validate
 	 * @return string       Validated value
 	 */
-	public function validate_field ( $data = '', $type = 'text' ) {
+	public static function validate_field ( $data = '', $type = 'text' ) {
 
 		switch( $type ) {
 			case 'text': $data = esc_attr( $data ); break;

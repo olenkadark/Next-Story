@@ -12,16 +12,12 @@ class U_Next_Story_Rule {
 	 * @access  public
 	 * @since   1.0.0
 	 */
-	public $base = '';
-
+	public $object_id = null;
 	public $title = '';
 	public $post_types = [];
 	public $same_term = [];
 	public $exclude = [];
-	public $menu = '';
-	public $submenu = 'include';
-	public $loop_menu = 'off';
-	public $effects_navigation = '';
+	public $effects_navigation = 'slide';
 	public $background_color = '';
 	public $text_color = '';
 	public $hover_background_color = '';
@@ -32,20 +28,6 @@ class U_Next_Story_Rule {
 	public $priority = 0;
 
 	public function __construct( $data = [] ) {
-		$this->base = U_Next_Story()->settings->base;
-		$styles_k   = [
-			'effects_navigation',
-			'background_color',
-			'text_color',
-			'hover_background_color',
-			'hover_text_color',
-			'top_position',
-			'scroll_position'
-		];
-		foreach ( $styles_k as $k ) {
-			$this->$k = get_option( $this->base . $k );
-		}
-
 		foreach ( $data as $key => $val ) {
 			$this->$key = $val;
 		}
@@ -59,11 +41,26 @@ class U_Next_Story_Rule {
 		}
 	}
 
-	public function get_post_types_html() {
+	/**
+	 * @return string
+	 */
+	public function get_post_types_html(): string {
 		$result = [];
 		foreach ( $this->post_types as $post_type ) {
 			$post_type_obj = get_post_type_object( $post_type );
 			$result[]      = $post_type_obj->labels->singular_name;
+		}
+
+		return implode( ', ', $result );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_same_term_html(): string {
+		$result = [];
+		foreach ( $this->same_term as $tax ) {
+			$result[]      = get_taxonomy($tax)->labels->name;
 		}
 
 		return implode( ', ', $result );

@@ -3,11 +3,12 @@
  * @var U_Next_Story_Rule $the_rule
  * @var array $sections
  */
+
 foreach ( $sections as $sid => $section ) {
 	?>
 
     <h3>
-		<?php echo $section['title']; ?>
+		<?php esc_html_e($section['title']); ?>
 		<?php
 		$attributes = '';
 		$class      = '';
@@ -20,7 +21,7 @@ foreach ( $sections as $sid => $section ) {
 					'type'        => 'checkbox',
 					'value'       => $the_rule->apply_styles
 				);
-				U_Next_Story()->admin->display_field( $f );
+				U_Next_Story_Admin_Api::display_field( $f );
 				$attributes = $the_rule->apply_styles === 'off' ? 'style="display:none;"' : '';
 				$attributes .= ' class="u--grid-2-col"';
 				break;
@@ -37,7 +38,7 @@ foreach ( $sections as $sid => $section ) {
 			?>
             <div class="form-field">
                 <label for="<?php echo $field['id']; ?>"><?php echo $field['label']; ?></label>
-				<?php U_Next_Story()->admin->display_field( $field ); ?>
+				<?php U_Next_Story_Admin_Api::display_field( $field );; ?>
             </div>
 		<?php } ?>
     </div>

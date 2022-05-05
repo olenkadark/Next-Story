@@ -5,11 +5,11 @@
  */
 $_sections = U_Next_Story()->settings->settings['general']['sections'];
 ?>
-<tr class="edit-rule" data-ruleid="<?php echo $rule_id; ?>">
-    <td colspan="8">
+<tr class="edit-rule" data-ruleid="<?php esc_attr_e($rule_id); ?>">
+    <td colspan="6">
         <form action="#" id="edit-rule-form">
-            <input type="hidden" name="rule_id" value="<?php echo $rule_id; ?>">
-            <input type="hidden" name="priority" value="<?php echo $the_rule->priority; ?>">
+            <input type="hidden" name="rule_id" value="<?php esc_attr_e($rule_id); ?>">
+            <input type="hidden" name="priority" value="<?php esc_attr_e($the_rule->priority); ?>">
             <div class="u--grid-2-col">
             <div class="column-row">
                 <?php
@@ -22,6 +22,7 @@ $_sections = U_Next_Story()->settings->settings['general']['sections'];
                         'general' => $_sections['general'],
                         'styles' => $_sections['styles']
                 ];
+
                 include "html-edit-rule-section.php"; ?>
             </div>
             <div class="column-row">

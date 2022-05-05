@@ -1,6 +1,6 @@
 <?php
 /**
- * @var array $rules
+ * @var U_Next_Story_Settings $settings
  */
 ?>
 <table class="wp-list-table widefat fixed striped" id="u_next_story_rules_table">
@@ -16,30 +16,23 @@
                 <?php _e('Post Types', 'u-next-story'); ?>
             </th>
             <th id="menu" class="manage-column column-menu">
-                <?php _e('Menu', 'u-next-story'); ?>
-            </th>
-            <th id="sub-items" class="manage-column column-sub-items">
-                <?php _e('Sub-items', 'u-next-story'); ?>
-            </th>
-            <th id="exclude" class="manage-column column-loop">
-                <?php _e('Loop', 'u-next-story'); ?>
+                <?php _e('In same term', 'u-next-story'); ?>
             </th>
             <th id="effect" class="manage-column column-effect">
-                <?php _e('Effect', 'u-next-story'); ?>
+                <?php _e('Effects', 'u-next-story'); ?>
             </th>
             <th id="actions" class="manage-column column-actions" width="150">
             </th>
         </tr>
     </thead>
     <tbody>
-        <tr class="no-items" <?php echo $rules && is_array($rules) ? 'style="display: none;"' : ''; ?>>
+        <tr class="no-items" <?php echo $settings->rules && is_array($settings->rules) ? 'style="display: none;"' : ''; ?>>
             <td colspan="8"><?php _e('No Rules'); ?></td>
         </tr>
         <?php
-        if( $rules && is_array($rules)): ?>
+        if( $settings->rules && is_array($settings->rules)): ?>
             <?php
-            foreach($rules as $rule_id => $rule) {
-                $the_rule = new U_Next_Story_Rule($rule);
+            foreach($settings->rules as $rule_id => $the_rule) {
                 include "html-rule-row.php";
             }
             ?>
