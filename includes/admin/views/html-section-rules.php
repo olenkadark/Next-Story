@@ -3,6 +3,7 @@
  * @var U_Next_Story_Settings $settings
  */
 ?>
+<h2><?php echo $section['title']; ?></h2>
 <table class="wp-list-table widefat fixed striped" id="u_next_story_rules_table">
     <thead>
         <tr>

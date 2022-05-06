@@ -8,7 +8,7 @@
  * Author URI: http://ucat.biz/
  * Requires at least: 4.9
  * Tested up to: 5.9.3
- * Requires PHP: 7.2
+ * Requires PHP: 7.0
  * Donate link: https://www.patreon.com/elenkadark
  *
  * Text Domain: u-next-story

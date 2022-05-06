@@ -329,6 +329,10 @@ class U_Next_Story_Admin_Settings {
 				'title'    => __( 'Rules', 'u-next-story' ),
 				'callback' => array( $this, 'rules_section' )
 			);
+			$settings['about'] = array(
+				'title'    => __( 'About', 'u-next-story' ),
+				'callback' => array( $this, 'about_section' )
+			);
 		set_transient( $this->base . 'settings_fields', $settings );
 		}
 		return apply_filters( $this->base . 'settings_fields', $settings );
@@ -459,17 +463,17 @@ class U_Next_Story_Admin_Settings {
 			$html .= '</h2>' . "\n";
 		}
 
-		if ( $tab !== 'rules' ) {
+		if ( isset($this->settings[$this->current_section]['callback']) ) {
+			ob_start();
+			call_user_func( $this->settings[$this->current_section]['callback'], $this->settings[$this->current_section] );
+			$html .= ob_get_clean();
+		}else{
 			$html .= '<form method="post" action="options.php" enctype="multipart/form-data">' . "\n";
-		}
-
-		// Get settings fields
-		ob_start();
-		settings_fields( $this->base . 'settings' );
-		do_settings_sections( $this->base . 'settings' );
-		$html .= ob_get_clean();
-
-		if ( $tab !== 'rules' ) {
+			// Get settings fields
+			ob_start();
+			settings_fields( $this->base . 'settings' );
+			do_settings_sections( $this->base . 'settings' );
+			$html .= ob_get_clean();
 			$html .= '<p class="submit">' . "\n";
 			$html .= '<input type="hidden" name="tab" value="' . esc_attr( $tab ) . '" />' . "\n";
 			$html .= '<input name="Submit" type="submit" class="button-primary" value="' . esc_attr( __( 'Save Settings',
@@ -486,6 +490,10 @@ class U_Next_Story_Admin_Settings {
 	public function rules_section( $section ) {
 		$settings = new U_Next_Story_Settings();
 		include "views/html-section-rules.php";
+	}
+
+	public function about_section( $section ) {
+		include "views/html-section-about.php";
 	}
 
 	/**
