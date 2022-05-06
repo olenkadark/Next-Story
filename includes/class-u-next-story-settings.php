@@ -47,14 +47,6 @@ class U_Next_Story_Settings {
 			$this->$key = $options_value;
 		}
 
-		/*foreach ( $this->same_term as $type => $val ) {
-			$key        = 'same_term_' . $type;
-			$this->$key = $val;
-		}
-		foreach ( $this->exclude as $type => $val ) {
-			$key        = 'exclude_' . $type;
-			$this->$key = $val;
-		}*/
 		unset( $options['rules'] );
 		$this->rules = array_map( function ( $rule ) use ( $options ) {
 			//$rule = array_merge( $options, $rule );
@@ -68,7 +60,7 @@ class U_Next_Story_Settings {
 	 *
 	 * @return array
 	 */
-	public function get_options( bool $with_rules = true, bool $only_styles = false ): array {
+		public function get_options( bool $with_rules = true, bool $only_styles = false ): array {
 		$options = get_transient( $this->base . 'options' );
 		if ( ! $options ) {
 			$defaults = [

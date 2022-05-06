@@ -29,7 +29,7 @@ class U_Next_Story_AJAX {
 	 * Hook in methods - uses WordPress ajax handlers (admin-ajax).
 	 */
 	public static function add_ajax_events() {
-		// bslm_EVENT => nopriv
+		// EVENT => nopriv
 		$ajax_events = array(
 			'add_new_rule'                    => false,
 			'edit_rule'                       => false,
@@ -48,31 +48,25 @@ class U_Next_Story_AJAX {
 
 	public static function add_new_rule(){
         check_ajax_referer( 'u_next_story_nonce', 'security' );
-	    $the_rule = new U_Next_Story_Rule();
-		$rules    = get_option(U_Next_Story()->settings->base . 'rules', []);
-
-		$the_rule->priority = count($rules) + 1;
+	    $the_rule = (new U_Next_Story_Settings())->get_new_rule();
         $rule_id = 'u_ns_' . time();
 
-        include "views/html-edit-rule.php";
+        include "admin/views/html-edit-rule.php";
 	    wp_die();
     }
 
     public static function edit_rule(){
         check_ajax_referer( 'u_next_story_nonce', 'security' );
         $rule_id  = $_REQUEST['rule_id'];
-	    $rules    = get_option(U_Next_Story()->settings->base . 'rules', []);
-        $rule     = $rules[$rule_id];
-
-        $the_rule = new U_Next_Story_Rule($rule);
-        include "views/html-edit-rule.php";
+	    $the_rule = (new U_Next_Story_Settings())->get_rule($rule_id);
+	    include "admin/views/html-edit-rule.php";
         wp_die();
     }
 
     public static function save_rule(){
         check_ajax_referer( 'u_next_story_nonce', 'security' );
         $rule_id  = $_REQUEST['rule_id'];
-        $rules    = get_option(U_Next_Story()->settings->base . 'rules', []);
+        $rules    = get_option(U_NEXT_STORY_TOKEN . '_rules', []);
 
         $rule     = $_REQUEST;
 
@@ -80,30 +74,27 @@ class U_Next_Story_AJAX {
         unset($rule['security']);
         unset($rule['action']);
 
-        $rules[$rule_id] = $rule;
+       $rules[$rule_id] = u_ns_form_clean($rule);
 
-	    update_option(U_Next_Story()->settings->base . 'rules', $rules, true);
-	    do_action( U_Next_Story()->settings->base . 'clean_cache');
-
+	    update_option(U_NEXT_STORY_TOKEN . '_rules', $rules, true);
+	    U_Next_Story_Cache::clean_cache();
         $the_rule = new U_Next_Story_Rule($rule);
-        $i = count($rules);
-        include "views/html-rule-row.php";
+        include "admin/views/html-rule-row.php";
         wp_die();
     }
 
     public static function delete_rule(){
         check_ajax_referer( 'u_next_story_nonce', 'security' );
         $rule_id  = $_REQUEST['rule_id'];
-        $rules    = get_option(U_Next_Story()->settings->base . 'rules', []);
+        $rules    = get_option(U_NEXT_STORY_TOKEN . '_rules', []);
 
         unset($rules[$rule_id]);
 
         $i = 0; foreach ($rules as $id => &$rule){ $i++;
 		    $rules[$id]['priority'] = $i;
         }
-
-	    update_option(U_Next_Story()->settings->base . 'rules', $rules, true);
-	    do_action( U_Next_Story()->settings->base . 'clean_cache');
+	    update_option(U_NEXT_STORY_TOKEN . '_rules', $rules);
+	    U_Next_Story_Cache::clean_cache();
 	    $return = array(
 		    'message'  => 'OK'
 	    );

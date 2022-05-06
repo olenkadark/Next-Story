@@ -5,6 +5,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class U_Next_Story_Admin_Settings {
+	/**
+	 * @var string
+	 */
+	public $base = '';
 
 	/**
 	 * Available settings for plugin.
@@ -27,7 +31,8 @@ class U_Next_Story_Admin_Settings {
 		$this->base = U_NEXT_STORY_TOKEN . '_';
 
 		// Register plugin settings
-		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_action( 'admin_init', array( $this, 'clear_cache' ), 10 );
+		add_action( 'admin_init', array( $this, 'register_settings' ), 15 );
 		// Add settings page to menu
 		add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
 
@@ -38,7 +43,7 @@ class U_Next_Story_Admin_Settings {
 	}
 
 	public function clear_cache(){
-		if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] && !get_transient( 'settings_errors' ) ) {
+		if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] ) {
 			U_Next_Story_Cache::clean_cache();
 		}
 	}
@@ -59,7 +64,7 @@ class U_Next_Story_Admin_Settings {
 		$page = add_options_page( __( 'Next Story Settings', 'u-next-story' ), __( 'Next Story', 'u-next-story' ),
 			'manage_options', $this->base . 'settings', array( $this, 'settings_page' ) );
 		add_action( 'admin_print_styles-' . $page, array( $this, 'settings_assets' ) );
-		add_action( 'load-' . $page, array( $this, 'clear_cache' ) );
+		//add_action( 'load-' . $page, array( $this, 'clear_cache' ) );
 	}
 
 	/**

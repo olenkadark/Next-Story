@@ -1,10 +1,11 @@
 === uCAT - Next Story ===
 Contributors: elenkadark
-Donate link: http://ucat.biz/
+Donate link: https://www.patreon.com/elenkadark
 Tags: arrow navigation, navigation, navigator, post navigation, post navigator, next story
-Requires at least: 4.0
-Tested up to: 5.1.1
+Requires at least: 4.9
+Tested up to: 5.9.3
 Stable tag: 2.0.0
+Requires PHP: 7.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +13,7 @@ The lateral navigation with interesting hover effects that in some cases enhance
 
 == Description ==
 * Author: [uCAT](http://ucat.biz)
-* Project URI: <http://ucat.biz/next-story/>
+* Project URI: <http://ucat.biz/projects/next-story/>
 * License: GPL 2. See License below for copyright jots and tittles.
 
 The lateral navigation with interesting hover effects that in some cases enhance the element, or show a preview of the content to come.
@@ -53,12 +54,12 @@ Features of this Post Navigator
 
 == Changelog ==
 
-= 03/04/2019 - version 2.0.0 =
-WordPress 5.1.1 compatibility.
+= 05/05/2022 - version 2.0.0 =
+WordPress 5.9.3 compatibility.
 Update settings page
 Ability in admin area to modify %, that user should scroll to, to reveal the next story links.
 Limit next/previous links to certain category
-Added rulless for displaying navigation links
+Added rules for displaying navigation links
 
 = 16/02/2016 - version 1.1.1 =
 Feature added where you can choose menu for displaying arrow navigation.

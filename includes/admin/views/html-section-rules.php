@@ -27,7 +27,7 @@
     </thead>
     <tbody>
         <tr class="no-items" <?php echo $settings->rules && is_array($settings->rules) ? 'style="display: none;"' : ''; ?>>
-            <td colspan="8"><?php _e('No Rules'); ?></td>
+            <td colspan="6"><?php _e('No Rules'); ?></td>
         </tr>
         <?php
         if( $settings->rules && is_array($settings->rules)): ?>

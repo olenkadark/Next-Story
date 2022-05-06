@@ -58,8 +58,9 @@ class U_Next_Story_Hooks {
 		string $adjacent
 	) {
 		$post = false;
-		$rule = (new U_Next_Story_Settings())->find_rules( get_post() );
-		if ( $rule->post_types && is_array( $rule->post_types ) && is_singular( $rule->post_types ) ) {
+		$rule = ( new U_Next_Story_Settings() )->find_rules( get_post() );
+		if ( ! empty( $rule->post_types ) && is_array( $rule->post_types ) && is_singular( $rule->post_types ) ) {
+
 			$result = self::get_adjacent_post_link( $format, $link, $adjacent, $rule );
 
 			if ( ! $result ) {
@@ -70,7 +71,6 @@ class U_Next_Story_Hooks {
 			$post   = $result[1];
 		} elseif ( ! empty( $rule->menu ) ) {
 			$result = self::get_adjacent_menu_link( $format, $link, $adjacent, $rule );
-
 			if ( ! $result ) {
 				return false;
 			}
@@ -162,7 +162,9 @@ class U_Next_Story_Hooks {
 		$is_previous  = $adjacent === 'previous';
 		$in_same_term = ! ! $settings->same_term;
 		$taxonomy     = ! empty( $settings->same_term ) ? $settings->same_term : 'category';
-		$post         = get_adjacent_post( $in_same_term, $settings->exclude, $is_previous, $taxonomy );
+
+		$post = get_adjacent_post( $in_same_term, $settings->exclude, $is_previous, $taxonomy );
+
 		if ( empty( $post ) ) {
 			return false;
 		}
@@ -185,7 +187,12 @@ class U_Next_Story_Hooks {
 		return array( $output, $post );
 	}
 
-	// Process a single image ID (this is an AJAX handler)
+	/**
+	 * @param $id
+	 * @param  int[]  $size
+	 *
+	 * @return false|string
+	 */
 	public static function get_attachment_image( $id, $size = array( 90, 90 ) ) {
 
 		$image_src = wp_get_attachment_image_src( $id, $size );
@@ -247,22 +254,21 @@ class U_Next_Story_Hooks {
 	public static function get_adjacent_menu_link(
 		string $format,
 		string $link,
-		bool $adjacent,
+		string $adjacent,
 		U_Next_Story_Rule $settings
 	) {
-		$location = $settings->menu;
-		$menu     = false;
-		if ( ! is_numeric( $location ) ) {
+		$menu = $settings->menu;
+		if ( ! is_numeric( $menu ) ) {
 			$theme_locations = get_nav_menu_locations();
-			if ( $theme_locations && isset( $theme_locations[ $location ] ) ) {
-				$menu_obj = get_term( $theme_locations[ $location ], 'nav_menu' );
+			if ( $theme_locations && isset( $theme_locations[ $menu ] ) ) {
+				$menu_obj = get_term( $theme_locations[ $menu ], 'nav_menu' );
 				if ( $menu_obj ) {
 					$menu = $menu_obj->term_id;
 				}
 			}
 		}
 
-		if ( ! $menu ) {
+		if ( ! is_numeric( $menu ) ) {
 			return false;
 		}
 		$previous = $adjacent === 'previous';

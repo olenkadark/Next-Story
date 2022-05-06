@@ -4,6 +4,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Class U_Next_Story_Rule
+ *
+ * @property string $menu
+ * @property string $loop_menu
+ * @property string $submenu
+ */
 class U_Next_Story_Rule {
 
 	/**
@@ -31,14 +38,20 @@ class U_Next_Story_Rule {
 		foreach ( $data as $key => $val ) {
 			$this->$key = $val;
 		}
-		foreach ( $this->same_term as $type => $val ) {
-			$key = 'same_term_' . $type;
-			$this->$key = $val;
+		if( is_array($this->same_term )){
+			foreach ( $this->same_term as $type => $val ) {
+				$key = 'same_term_' . $type;
+				$this->$key = $val;
+			}
 		}
-		foreach ( $this->exclude as $type => $val ) {
-			$key = 'exclude_' . $type;
-			$this->$key = $val;
+
+		if( is_array($this->exclude) ){
+			foreach ( $this->exclude as $type => $val ) {
+				$key = 'exclude_' . $type;
+				$this->$key = $val;
+			}
 		}
+
 	}
 
 	/**
@@ -47,6 +60,7 @@ class U_Next_Story_Rule {
 	public function get_post_types_html(): string {
 		$result = [];
 		foreach ( $this->post_types as $post_type ) {
+			if( empty($post_type)) continue;
 			$post_type_obj = get_post_type_object( $post_type );
 			$result[]      = $post_type_obj->labels->singular_name;
 		}
@@ -60,7 +74,8 @@ class U_Next_Story_Rule {
 	public function get_same_term_html(): string {
 		$result = [];
 		foreach ( $this->same_term as $tax ) {
-			$result[]      = get_taxonomy($tax)->labels->name;
+			if( empty($tax)) continue;
+			$result[]   = get_taxonomy($tax)->labels->name;
 		}
 
 		return implode( ', ', $result );
