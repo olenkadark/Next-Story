@@ -66,7 +66,7 @@ class U_Next_Story_Scripts {
 		$this->assets_url = esc_url( trailingslashit( plugins_url( '/assets/', U_NEXT_STORY_PLUGIN_FILE ) ) );
 
 		$this->script_suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-		$this->script_suffix = '';
+		//$this->script_suffix = '';
 	}
 
 	/**
@@ -77,7 +77,7 @@ class U_Next_Story_Scripts {
 	 */
 	public function scripts_url( string $file_name, $force = false ): string {
 		$suffix = $force ? '.min' : $this->script_suffix;
-
+var_dump($suffix);
 		return esc_url( $this->assets_url . 'js/' . $file_name . $suffix . '.js' );
 	}
 
