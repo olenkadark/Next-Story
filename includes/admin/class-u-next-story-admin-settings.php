@@ -37,6 +37,7 @@ class U_Next_Story_Admin_Settings {
 		add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
 
 		// Add settings link to plugins page
+		add_action( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 100, 2 );
 		add_filter( 'plugin_action_links_' . plugin_basename( U_NEXT_STORY_PLUGIN_FILE ),
 			array( $this, 'add_settings_link' ) );
 
@@ -91,8 +92,21 @@ class U_Next_Story_Admin_Settings {
 		$settings_link = '<a href="options-general.php?page=' . $this->base . 'settings">' . __( 'Settings',
 				'u-next-story' ) . '</a>';
 		array_push( $links, $settings_link );
-
 		return $links;
+	}
+
+	/**
+	 * @param  array  $plugin_meta
+	 * @param  string  $plugin_file
+	 *
+	 * @return array
+	 */
+	public function plugin_row_meta( array $plugin_meta, string $plugin_file): array{
+		if( $plugin_file == plugin_basename( U_NEXT_STORY_PLUGIN_FILE )){
+			$plugin_meta[] = '<a href="options-general.php?page=' . $this->base . 'settings&tab=about#sponsoring">' . __( 'Sponsoring',
+					'u-next-story' ) . '</a>';
+		}
+		return $plugin_meta;
 	}
 
 	/**
