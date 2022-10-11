@@ -3,11 +3,11 @@
 if( !function_exists('u_ns_get_template')) {
 	/**
 	 * @param $template_name
-	 * @param  array  $args
-	 * @param  string  $template_path
-	 * @param  string  $default_path
+	 * @param array $args
+	 * @param string $template_path
+	 * @param string $default_path
 	 */
-	function u_ns_get_template( $template_name, $args = array(), $template_path = '', $default_path = '' ) {
+	function u_ns_get_template($template_name, array $args = array(), string $template_path = '', string $default_path = '' ) {
 		if ( $args && is_array( $args ) ) {
 			extract( $args );
 		}
@@ -80,6 +80,25 @@ function u_ns_form_clean($var) {
 	}
 }
 
+function u_ns_get_effects_navigation(): array
+{
+    return apply_filters('u_next_story_effects_navigation', array(
+        'slide'        => 'Slide',
+        'image_bar'    => 'Image Bar',
+        'circle_pop'   => 'Circle Pop',
+        'round_slide'  => 'Round Slide',
+        'split'        => 'Split',
+        'reveal'       => 'Reveal',
+        'thumb_flip'   => 'Thumb Flip',
+        'double_flip'  => 'Double Flip',
+        'multi_thumb'  => 'Multi Thumb',
+        'circle_slide' => 'Circle Slide',
+        'grow_pop'     => 'Grow Pop',
+        'diamond'      => 'Diamond',
+        'fill_slide'   => 'Fill Slide',
+        'fill_path'    => 'Fill Path'
+    ));
+}
 
 add_image_size( 'u_next_story-thumb', 90, 90, true );
 add_image_size( 'u_next_story-62', 62, 64, true );

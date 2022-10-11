@@ -16,8 +16,8 @@ class U_Next_Story_Rule {
 	public ?int $object_id = null;
 	public string $title = '';
 	public array $post_types = [];
-	public ?array $same_term = [];
-	public ?array $exclude = [];
+	public array $same_term = [];
+	public array $exclude = [];
 	public string $effects_navigation = 'slide';
 	public string $background_color = '';
 	public string $text_color = '';
@@ -29,18 +29,21 @@ class U_Next_Story_Rule {
 	public string $apply_styles = 'off';
 	public int $priority = 0;
 
+    public array $_additional_values = [];
+
 	public function __construct( $data = [] ) {
-		foreach ( $data as $key => $val ) {
-			$this->$key = $val;
+
+        foreach ( $data as $key => $val ) {
+            $this->$key = $val;
 		}
-		if( is_array($this->same_term )){
+		if( $this->same_term){
 			foreach ( $this->same_term as $type => $val ) {
 				$key = 'same_term_' . $type;
 				$this->$key = $val;
 			}
 		}
 
-		if( is_array($this->exclude) ){
+		if( $this->exclude ){
 			foreach ( $this->exclude as $type => $val ) {
 				$key = 'exclude_' . $type;
 				$this->$key = $val;

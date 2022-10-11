@@ -14,7 +14,12 @@
         <?php echo $the_rule->get_same_term_html(); ?>
     </td>
     <td class="column-effect">
-        <?php echo sanitize_text_field($the_rule->apply_styles); ?>
+        <?php
+        $effects = u_ns_get_effects_navigation();
+        echo $the_rule->apply_styles === 'on' && isset($effects[$the_rule->effects_navigation])
+            ? $effects[$the_rule->effects_navigation]
+            : $the_rule->apply_styles;
+        ?>
     </td>
     <td class="column-actions">
         <button class="uns-edit-rule"><?php _e('Edit', 'u-next-story'); ?></button>

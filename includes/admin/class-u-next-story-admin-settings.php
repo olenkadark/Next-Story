@@ -8,15 +8,14 @@ class U_Next_Story_Admin_Settings {
 	/**
 	 * @var string
 	 */
-	public $base = '';
+	public string $base = '';
 
 	/**
 	 * Available settings for plugin.
-	 * @var     array
 	 * @access  public
 	 * @since   1.0.0
 	 */
-	public $settings = array();
+	public array $settings = array();
 
 	/**
 	 * Current tab settings page.
@@ -24,7 +23,7 @@ class U_Next_Story_Admin_Settings {
 	 * @access  public
 	 * @since   2.0.0
 	 */
-	public $current_section = 'general';
+	public string $current_section = 'general';
 
 	public function __construct() {
 
@@ -205,6 +204,13 @@ class U_Next_Story_Admin_Settings {
 								'options'     => $post_types,
 								'default'     => []
 							),
+                            'edit_link_on_page' => array(
+                                'id'          => 'edit_link_on_page',
+                                'label'       => __( 'Edit links', 'u-next-story' ),
+                                'description' => __( 'Manage Next/Previous links directly on edit page.', 'u-next-story' ),
+                                'type'        => 'checkbox',
+                                'default'     => 'off'
+                            )
 						)
 					],
 					'in_same_term' => [
@@ -263,22 +269,7 @@ class U_Next_Story_Admin_Settings {
 								'label'       => __( 'Effects', 'u-next-story' ),
 								'description' => __( 'Effects and styles for arrow navigation', 'u-next-story' ),
 								'type'        => 'select',
-								'options'     => array(
-									'slide'        => 'Slide',
-									'image_bar'    => 'Image Bar',
-									'circle_pop'   => 'Circle Pop',
-									'round_slide'  => 'Round Slide',
-									'split'        => 'Split',
-									'reveal'       => 'Reveal',
-									'thumb_flip'   => 'Thumb Flip',
-									'double_flip'  => 'Double Flip',
-									'multi_thumb'  => 'Multi Thumb',
-									'circle_slide' => 'Circle Slide',
-									'grow_pop'     => 'Grow Pop',
-									'diamond'      => 'Diamond',
-									'fill_slide'   => 'Fill Slide',
-									'fill_path'    => 'Fill Path'
-								),
+								'options'     => u_ns_get_effects_navigation(),
 								'default'     => 'slide'
 							),
 							array(
@@ -378,13 +369,13 @@ class U_Next_Story_Admin_Settings {
 
 				foreach ( $data['sections'] as $section_data ) {
 
-					$section_id = isset( $section_data['id'] ) ? $section_data['id'] : $section;
-					$callback   = isset( $section_data['callback'] ) ? $section_data['callback'] : array(
-						$this,
-						'settings_section'
-					);
+					$section_id = $section_data['id'] ?? $section;
+					$callback   = $section_data['callback'] ?? array(
+                        $this,
+                        'settings_section'
+                    );
 
-					if ( ( ! isset( $section_data['fields'] ) || empty( $section_data['fields'] ) )
+					if ( empty( $section_data['fields'] )
 					     && isset( $section_data['skip_if_empty'] )
 					     && $section_data['skip_if_empty'] ) {
 						continue;

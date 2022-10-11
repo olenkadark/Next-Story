@@ -45,24 +45,23 @@ class U_Next_Story_Hooks {
 	 * @param  string  $output  The adjacent post link.
 	 * @param  string  $format  Link anchor format.
 	 * @param  string  $link  Link permalink format.
-	 * @param  WP_Post|null  $post  The adjacent post.
+	 * @param WP_Post|string $post  The adjacent post.
 	 * @param  string  $adjacent  Whether the post is previous or next.
 	 *
 	 * @return false|string|string[]
 	 */
 	public static function parse_post_link(
-		string $output,
-		string $format,
-		string $link,
-		$post,
-		string $adjacent
+        string   $output,
+        string   $format,
+        string   $link,
+        $post,
+        string   $adjacent
 	) {
 		$post = false;
 		$rule = ( new U_Next_Story_Settings() )->find_rules( get_post() );
-		if ( ! empty( $rule->post_types ) && is_array( $rule->post_types ) && is_singular( $rule->post_types ) ) {
+		if ( ! empty( $rule->post_types ) && is_singular( $rule->post_types ) ) {
 
 			$result = self::get_adjacent_post_link( $format, $link, $adjacent, $rule );
-
 			if ( ! $result ) {
 				return false;
 			}
@@ -161,7 +160,7 @@ class U_Next_Story_Hooks {
 	) {
 		$is_previous  = $adjacent === 'previous';
 		$in_same_term = ! ! $settings->same_term;
-		$taxonomy     = ! empty( $settings->same_term ) ? $settings->same_term : 'category';
+		$taxonomy     = ! empty( $settings->same_term ) ? $settings->same_term[0] : 'category';
 
 		$post = get_adjacent_post( $in_same_term, $settings->exclude, $is_previous, $taxonomy );
 
@@ -330,7 +329,7 @@ class U_Next_Story_Hooks {
 				break;
 		}
 
-		$post = isset( $menu_items[ $need_key ] ) ? $menu_items[ $need_key ] : false;
+		$post = $menu_items[$need_key] ?? false;
 
 		$output = '';
 		if ( $post ) {
@@ -366,10 +365,9 @@ class U_Next_Story_Hooks {
 	 * @access  public
 	 */
 	public static function display_arrow_navigation() {
-		$effects = get_option( 'u_next_story_effects_navigation', 'slide' );
-
+        $rule = ( new U_Next_Story_Settings() )->find_rules( get_post() );
 		u_ns_get_template( 'arrow_icons.php' );
-		u_ns_get_template( $effects . '.php' );
+		u_ns_get_template( $rule->effects_navigation . '.php' );
 	}
 
 }

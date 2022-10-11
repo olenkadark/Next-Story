@@ -1,6 +1,7 @@
 <?php
 /**
  * @var U_Next_Story_Settings $settings
+ * @var array $section
  */
 ?>
 <h2><?php echo $section['title']; ?></h2>
@@ -20,7 +21,7 @@
                 <?php _e('In same term', 'u-next-story'); ?>
             </th>
             <th id="effect" class="manage-column column-effect">
-                <?php _e('Effects', 'u-next-story'); ?>
+                <?php _e('Effect', 'u-next-story'); ?>
             </th>
             <th id="actions" class="manage-column column-actions" width="150">
             </th>

@@ -28,12 +28,12 @@ class U_Next_Story_Settings {
 	/**
 	 * @var string
 	 */
-	private $base = '';
+	private string $base = '';
 
 	/**
 	 * @var array
 	 */
-	public $rules = [];
+	public array $rules = [];
 
 	public function __construct() {
 		$this->base = U_NEXT_STORY_TOKEN . '_';
@@ -49,7 +49,6 @@ class U_Next_Story_Settings {
 
 		unset( $options['rules'] );
 		$this->rules = array_map( function ( $rule ) use ( $options ) {
-			//$rule = array_merge( $options, $rule );
 			return new U_Next_Story_Rule( $rule );
 		}, $this->rules );
 	}
@@ -82,7 +81,10 @@ class U_Next_Story_Settings {
 			];
 
 			foreach ( $defaults as $key => $default_value ) {
-				$options[ $key ] = get_option( $this->base . $key, $default_value );
+				$options[ $key ] = get_option( $this->base . $key, null );
+                if(empty($options[ $key ])){
+                    $options[ $key ] = $default_value;
+                }
 			}
 			set_transient( $this->base . 'options', $options );
 		}
@@ -119,7 +121,7 @@ class U_Next_Story_Settings {
 			if ( ! $rules ) {
 				$rules = new U_Next_Story_Rule( $this->get_options( false ) );
 			}
-			$rules->same_term = isset( $rules->same_term[ $post->post_type ] ) ? $rules->same_term[ $post->post_type ] : '';
+			$rules->same_term = array_filter([$rules->same_term[$post->post_type] ?? '']);
 			$exclude          = [];
 			if ( $rules->exclude ) {
 				$taxonomy_objects = array_keys( get_object_taxonomies( $post->post_type, 'objects' ) );

@@ -15,11 +15,7 @@ class U_Next_Story_Admin_Api {
 	public static function display_field ( $args = array(), $post = false, $echo = true ) {
 
 		// Get field info
-		if ( isset( $args['field'] ) ) {
-			$field = $args['field'];
-		} else {
-			$field = $args;
-		}
+        $field = $args['field'] ?? $args;
 		$class = $field['class'] ?? [];
 		$class = !is_array($class) ? [$class] : $class;
 
