@@ -66,18 +66,16 @@ class U_Next_Story_Scripts {
 		$this->assets_url = esc_url( trailingslashit( plugins_url( '/assets/', U_NEXT_STORY_PLUGIN_FILE ) ) );
 
 		$this->script_suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-		//$this->script_suffix = '';
 	}
 
 	/**
 	 * @param  string  $file_name
-	 * @param  bool  $force
+	 * @param bool $force
 	 *
 	 * @return string
 	 */
-	public function scripts_url( string $file_name, $force = false ): string {
+	public function scripts_url( string $file_name, bool $force = false ): string {
 		$suffix = $force ? '.min' : $this->script_suffix;
-var_dump($suffix);
 		return esc_url( $this->assets_url . 'js/' . $file_name . $suffix . '.js' );
 	}
 
@@ -89,7 +87,6 @@ var_dump($suffix);
 	 */
 	public function styles_url( string $file_name, $force = false ): string {
 		$suffix = $force ? '.min' : $this->script_suffix;
-
 		return esc_url( $this->assets_url . 'css/' . $file_name . $suffix . '.css' );
 	}
 

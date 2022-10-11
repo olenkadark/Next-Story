@@ -17,7 +17,7 @@
         <?php echo sanitize_text_field($the_rule->apply_styles); ?>
     </td>
     <td class="column-actions">
-        <button class="uns-edit-rule"><? _e('Edit', 'u-next-story'); ?></button>
-        <button class="uns-delete-rule"><? _e('Delete', 'u-next-story'); ?></button>
+        <button class="uns-edit-rule"><?php _e('Edit', 'u-next-story'); ?></button>
+        <button class="uns-delete-rule"><?php _e('Delete', 'u-next-story'); ?></button>
     </td>
 </tr>

@@ -28,7 +28,7 @@ foreach ( $sections as $sid => $section ) {
 			case 'in_same_term':
 				?>
                 <small>(<?php echo $section['description'] ?>)</small>
-				<?
+				<?php
 				break;
 		}
 		?></h3>

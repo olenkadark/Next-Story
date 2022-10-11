@@ -1,10 +1,10 @@
 === uCAT - Next Story ===
 Contributors: elenkadark
-Donate link: https://www.patreon.com/elenkadark
+Donate link: https://www.patreon.com/olenkadark
 Tags: arrow navigation, navigation, navigator, post navigation, post navigator, next story
 Requires at least: 4.9
-Tested up to: 5.9.3
-Stable tag: 2.0.0
+Tested up to: 6.0.2
+Stable tag: 2.0.1
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -12,8 +12,8 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 The lateral navigation with interesting hover effects that in some cases enhance the element, or show a preview of the content to come.
 
 == Description ==
-* Author: [uCAT](http://ucat.biz)
-* Project URI: <http://ucat.biz/projects/next-story/>
+* Author: [uCAT](http://ucat.tech)
+* Project URI: <http://ucat.tech/products/next-story/>
 * License: GPL 2. See License below for copyright jots and tittles.
 
 The lateral navigation with interesting hover effects that in some cases enhance the element, or show a preview of the content to come.
@@ -54,6 +54,12 @@ Requires WordPress 4.9 and PHP 7.0 or higher
 15. Style Fill Path
 
 == Changelog ==
+
+= 11/10/2022 - version 2.0.1 =
+WordPress 6.0.2 compatibility.
+Update Select2 version
+Settings Next/Previous links directly on page edit page
+Random Post
 
 = 05/05/2022 - version 2.0.0 =
 WordPress 5.9.3 compatibility.

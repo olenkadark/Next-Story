@@ -3,14 +3,13 @@ jQuery(document).ready(function($) {
     $.blockUI.defaults.overlayCSS.background = '#fff';
     $.blockUI.defaults.overlayCSS.opacity    = 0.6;
     $.blockUI.defaults.message = null;
-    var $wrapper = $('#u_next_story_settings');
-    var $tb = $('#u_next_story_rules_table');
+    let $wrapper = $('#u_next_story_settings');
+    let $tb = $('#u_next_story_rules_table');
 
     /***** Select2 *****/
     $( document ).on( "u_init_select", function() {
         $( 'select.u-init-select:not(.u-inited)' ).select2().addClass('u-inited');
         $('#post_types').trigger('change');
-
     })
         .on('change', '#apply_styles', function (e) {
             if( $(this).is(':checked') ){
@@ -170,12 +169,12 @@ jQuery(document).ready(function($) {
 
     /***** Uploading images *****/
 
-    var file_frame;
+    let file_frame;
 
     jQuery.fn.uploadMediaFile = function( button, preview_media ) {
-        var button_id = button.attr('id');
-        var field_id = button_id.replace( '_button', '' );
-        var preview_id = button_id.replace( '_button', '_preview' );
+        let button_id = button.attr('id');
+        let field_id = button_id.replace( '_button', '' );
+        let preview_id = button_id.replace( '_button', '_preview' );
 
         // If the media frame already exists, reopen it.
         if ( file_frame ) {
@@ -194,7 +193,7 @@ jQuery(document).ready(function($) {
 
         // When an image is selected, run a callback.
         file_frame.on( 'select', function() {
-          attachment = file_frame.state().get('selection').first().toJSON();
+          let attachment = file_frame.state().get('selection').first().toJSON();
           jQuery("#"+field_id).val(attachment.id);
           if( preview_media ) {
             jQuery("#"+preview_id).attr('src',attachment.sizes.thumbnail.url);

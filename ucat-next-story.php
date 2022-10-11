@@ -1,20 +1,20 @@
 <?php
 /*
  * Plugin Name: uCAT - Next Story
- * Version: 2.0.0
- * Plugin URI: http://ucat.biz/projects/next-story/
+ * Version: 2.0.1
+ * Plugin URI: http://ucat.tech/products/next-story/
  * Description: The lateral navigation with interesting hover effects that in some cases enhance the element, or show a preview of the content to come.
- * Author: Elena Zhyvohliad
- * Author URI: http://ucat.biz/
+ * Author: Olena Zhyvohliad
+ * Author URI: http://ucat.tech/my-story
  * Requires at least: 4.9
- * Tested up to: 5.9.3
+ * Tested up to: 6.0.2
  * Requires PHP: 7.0
- * Donate link: https://www.patreon.com/elenkadark
+ * Donate link: https://www.patreon.com/olenkadark
  *
  * Text Domain: u-next-story
  * Domain Path: /lang/
  *
- * @author Elena Zhyvohliad
+ * @author Olena Zhyvohliad
  * @since 1.0.0
  */
 

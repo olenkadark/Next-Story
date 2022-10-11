@@ -47,12 +47,11 @@ class U_Next_Story_AJAX {
 	}
 
 	public static function add_new_rule(){
-        check_ajax_referer( 'u_next_story_nonce', 'security' );
-	    $the_rule = (new U_Next_Story_Settings())->get_new_rule();
-        $rule_id = 'u_ns_' . time();
-
-        include "admin/views/html-edit-rule.php";
-	    wp_die();
+		check_ajax_referer( 'u_next_story_nonce', 'security' );
+		$the_rule = (new U_Next_Story_Settings())->get_new_rule();
+		$rule_id = 'u_ns_' . time();
+		include "admin/views/html-edit-rule.php";
+		wp_die();
     }
 
     public static function edit_rule(){

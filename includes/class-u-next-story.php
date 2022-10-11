@@ -8,43 +8,38 @@ if ( ! class_exists( 'U_Next_Story' ) ) :
 
 		/**
 		 * The version number.
-		 * @var     string
 		 * @access  public
 		 * @since   1.0.0
 		 */
-		public $_version = '2.0.0';
+		public string $_version = '2.0.0';
 
 		/**
 		 * The single instance of U_Next_Story.
-		 * @var    U_Next_Story
 		 * @access   private
 		 * @since    1.0.0
 		 */
-		private static $_instance = null;
+		private static ?U_Next_Story $_instance = null;
 
 		/**
 		 * The token.
-		 * @var     string
 		 * @access  public
 		 * @since   1.0.0
 		 */
-		public $_token = 'u_next_story';
+		public string $_token = 'u_next_story';
 
 		/**
 		 * The main plugin file.
-		 * @var     string
 		 * @access  public
 		 * @since   1.0.0
 		 */
-		public $file;
+		public string $file;
 
 		/**
 		 * Settings class object
-		 * @var     U_Next_Story_Admin_Settings
 		 * @access  public
 		 * @since   1.0.0
 		 */
-		public $settings = null;
+		public ?U_Next_Story_Admin_Settings $settings = null;
 
 
 		/**
@@ -92,10 +87,6 @@ if ( ! class_exists( 'U_Next_Story' ) ) :
 			require_once( 'class-u-next-story-scripts.php' );
 			require_once( 'class-u-next-story-ajax.php' );
 			require_once( 'class-u-next-story-hooks.php' );
-			#require_once( 'class-u-next-story-rule.php' );
-
-			// Load plugin admin class files
-			//require_once( 'admin/class-u-next-story-admin-settings.php' );
 		}
 
 		/**
@@ -128,6 +119,7 @@ if ( ! class_exists( 'U_Next_Story' ) ) :
 				case 'frontend' :
 					return ( ! is_admin() || defined( 'DOING_AJAX' ) ) && ! defined( 'DOING_CRON' );
 			}
+            return false;
 		}
 
 

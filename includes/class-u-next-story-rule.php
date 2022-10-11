@@ -13,26 +13,21 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class U_Next_Story_Rule {
 
-	/**
-	 * Prefix for plugin settings.
-	 * @var     string
-	 * @access  public
-	 * @since   1.0.0
-	 */
-	public $object_id = null;
-	public $title = '';
-	public $post_types = [];
-	public $same_term = [];
-	public $exclude = [];
-	public $effects_navigation = 'slide';
-	public $background_color = '';
-	public $text_color = '';
-	public $hover_background_color = '';
-	public $hover_text_color = '';
-	public $top_position = '';
-	public $scroll_position = '';
-	public $apply_styles = 'off';
-	public $priority = 0;
+	public ?int $object_id = null;
+	public string $title = '';
+	public array $post_types = [];
+	public ?array $same_term = [];
+	public ?array $exclude = [];
+	public string $effects_navigation = 'slide';
+	public string $background_color = '';
+	public string $text_color = '';
+	public string $hover_background_color = '';
+	public string $hover_text_color = '';
+	public string $top_position = '';
+	public string $scroll_position = '';
+	public string $scroll_position_unit = 'px';
+	public string $apply_styles = 'off';
+	public int $priority = 0;
 
 	public function __construct( $data = [] ) {
 		foreach ( $data as $key => $val ) {
@@ -62,7 +57,8 @@ class U_Next_Story_Rule {
 		foreach ( $this->post_types as $post_type ) {
 			if( empty($post_type)) continue;
 			$post_type_obj = get_post_type_object( $post_type );
-			$result[]      = $post_type_obj->labels->singular_name;
+            if( $post_type_obj )
+			    $result[] = $post_type_obj->labels->singular_name;
 		}
 
 		return implode( ', ', $result );
@@ -75,7 +71,9 @@ class U_Next_Story_Rule {
 		$result = [];
 		foreach ( $this->same_term as $tax ) {
 			if( empty($tax)) continue;
-			$result[]   = get_taxonomy($tax)->labels->name;
+            $taxonomy_obj = get_taxonomy($tax);
+            if( $taxonomy_obj )
+			    $result[] = $taxonomy_obj->labels->name;
 		}
 
 		return implode( ', ', $result );
